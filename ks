@@ -21,6 +21,7 @@ local allowedUsers = {
     ["treezeekk"] = true,
     ["roblox_user_4058510147"] = true,
     ["aly_jxhn"] = true,
+    ["thegoatdangerr"] = true,
 }
 
 if not allowedUsers[player.Name] then
