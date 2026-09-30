@@ -10,6 +10,36 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 --========================================================--
+-- MASTER HANDLER CONFIG (Main Handler Override)
+--========================================================--
+local masterHandlers = {
+    ["queenrosee172"] = true, -- You can add more master handler usernames here if needed
+}
+
+--========================================================--
+-- USER-SPECIFIC CUSTOMIZATION CONFIG
+--========================================================--
+local customConfigs = {
+    ["craken696"] = { prefix = "Craken", title = "Craken System" },
+    ["MKU48U"] = { prefix = "Konan", title = "Konan System" },
+    ["MCT48T"] = { prefix = "Susanoo", title = "Susanoo System" },
+    ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
+    ["treezeekk"] = { prefix = "S", title = "S System" },
+    ["roblox_user_4058510147"] = { prefix = "Rose", title = "Rose System" },
+    ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
+    ["thegoatdangerr"] = { prefix = "R", title = "R System" },
+    ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
+    ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
+}
+
+-- Fallback default name if username is not in the custom config above
+local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
+local userConfig = customConfigs[player.Name] or defaultConfig
+
+local SCRIPT_PREFIX = userConfig.prefix -- e.g., "Craken" or "T21"
+local SCRIPT_TITLE = userConfig.title
+
+--========================================================--
 -- USERNAME CHECK (Guard Clause)
 --========================================================--
 local allowedUsers = {
@@ -22,6 +52,7 @@ local allowedUsers = {
     ["roblox_user_4058510147"] = true,
     ["aly_jxhn"] = true,
     ["thegoatdangerr"] = true,
+    ["mnmnbv555"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -57,8 +88,8 @@ local function chat(msg)
     end)
 end
 
--- Send startup message through chat system
-chat("T21 Script Loaded...")
+-- Send startup message through chat system using dynamic prefix
+chat(SCRIPT_TITLE .. " Script Loaded...")
 
 -- Added messages with delays
 task.wait(1)
@@ -66,7 +97,7 @@ chat("Made By Kyoshi")
 task.wait(1)
 chat("Script abuser hunter")
 task.wait(1)
-chat("T21 Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy")
+chat(SCRIPT_PREFIX .. " Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy, kill")
 
 local parentPlayer = player
 local followConnection = nil
@@ -75,6 +106,7 @@ local followConnection = nil
 local mode = "idle"
 local attackTarget = nil
 local panicMode = false
+local scriptActive = true -- Master toggle to completely kill the code
 
 -- Settings
 local FLOAT_HEIGHT = 0
@@ -110,12 +142,17 @@ local resetUsed = false
 -- Recovery & Monitoring State
 local isRecovering = false
 local attackActiveState = false
+local lastResetTime = 0 -- Debounce tracker for 1 reset per 5 seconds
 
--- Assigners
+-- Assigners & Controllers (Main primary handler is queenrosee172)
 local assigners = {
-    ["jhxnna_rxse"] = true,
+    ["queenrosee172"] = true,
 }
 assigners[player.Name] = true
+
+local function isController(plr)
+    return allowedUsers[plr.Name] or assigners[plr.Name] or masterHandlers[plr.Name] or plr == parentPlayer
+end
 
 --========================================================--
 -- PLAYER FIND
@@ -136,6 +173,7 @@ end
 --========================================================--
 
 RunService.Stepped:Connect(function()
+    if not scriptActive then return end
     local char = player.Character
     if not char then return end
     for _, part in ipairs(char:GetDescendants()) do
@@ -150,6 +188,7 @@ end)
 --========================================================--
 
 local function updateHitboxes()
+    if not scriptActive then return end
     for _, plr in ipairs(Players:GetPlayers()) do
         local char = plr.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
@@ -167,6 +206,7 @@ end
 --========================================================--
 
 local function smoothMove(hrp, targetPos)
+    if not scriptActive then return end
     local dir = targetPos - hrp.Position
     local mag = dir.Magnitude
     if mag < 0.001 then return end
@@ -178,15 +218,21 @@ local function smoothMove(hrp, targetPos)
 end
 
 --========================================================--
--- PREDICTION
+-- PREDICTION (4-Stud Limit & Horizontal Only)
 --========================================================--
 
-local function getPredictedPosition(targetHRP)
+local function getPredictedPosition(hrp, targetHRP)
     if not PREDICT_ENABLED then
         return targetHRP.Position
     end
-    local velocity = targetHRP.Velocity
-    return targetHRP.Position + (velocity * PREDICT_FACTOR)
+    
+    local distance = (hrp.Position - targetHRP.Position).Magnitude
+    if distance <= 4 then
+        local velocity = Vector3.new(targetHRP.Velocity.X, 0, targetHRP.Velocity.Z)
+        return targetHRP.Position + (velocity * PREDICT_FACTOR)
+    else
+        return targetHRP.Position
+    end
 end
 
 --========================================================--
@@ -204,14 +250,13 @@ local function getTargetPosition(target)
 end
 
 local function destroyTargetPlayer(dt)
-    if not destroyTarget then return end
+    if not scriptActive or not destroyTarget then return end
     local char = player.Character
     if not char then return end
     local hrp = char:FindFirstChild("HumanoidRootPart")
     local pos = getTargetPosition(destroyTarget)
     if not hrp or not pos then return end
 
-    -- Orbit around target
     orbitAngle = orbitAngle + (ORBIT_SPEED * dt)
     local offset = Vector3.new(math.cos(orbitAngle) * ORBIT_RADIUS, FLOAT_HEIGHT, math.sin(orbitAngle) * ORBIT_RADIUS)
     smoothMove(hrp, pos + offset)
@@ -223,7 +268,7 @@ end
 
 task.spawn(function()
     while true do
-        if m1Active then
+        if scriptActive and m1Active then
             pcall(function()
                 ReplicatedStorage.CombatRemote:FireServer("M1")
             end)
@@ -234,7 +279,7 @@ end)
 
 task.spawn(function()
     while true do
-        if m2Active then
+        if scriptActive and m2Active then
             pcall(function()
                 ReplicatedStorage.CombatRemote:FireServer("M2")
             end)
@@ -245,7 +290,7 @@ end)
 
 task.spawn(function()
     while true do
-        if BLOCK_ENABLED then
+        if scriptActive and BLOCK_ENABLED then
             ReplicatedStorage.CombatRemote:FireServer("Block")
             task.wait(0)
             ReplicatedStorage.CombatRemote:FireServer("Block")
@@ -259,6 +304,7 @@ end)
 --========================================================--
 
 local function executeSingleVoidDrop()
+    if not scriptActive then return end
     local localChar = player.Character or player.CharacterAdded:Wait()
     local rootPart = localChar:WaitForChild("HumanoidRootPart", 5)
     if not rootPart then return end
@@ -281,7 +327,7 @@ local function executeSingleVoidDrop()
     local connection
 
     connection = RunService.RenderStepped:Connect(function(deltaTime)
-        if not localChar or not localChar.Parent or not rootPart.Parent or not marker.Parent then
+        if not scriptActive or not localChar or not localChar.Parent or not rootPart.Parent or not marker.Parent then
             if connection then connection:Disconnect() end
             return
         end
@@ -300,31 +346,24 @@ end
 
 local function runVoidDropSequence()
     for i = 1, 5 do
+        if not scriptActive then break end
         executeSingleVoidDrop()
     end
 end
 
--- Unified Recovery / Initiation Sequence Handler with 5s Timer for 100000 Move Step
 local function performRecoverySequence(onCompleteCallback)
-    if isRecovering then return end
+    if not scriptActive or isRecovering then return end
     isRecovering = true
 
-    -- 1. Reset avatar ONE TIME ONLY
     local char = player.Character
     if char and char:FindFirstChild("Humanoid") then
         char.Humanoid.Health = 0
     end
 
-    -- Wait for respawn after reset
     player.CharacterAdded:Wait()
-
-    -- 2. Wait exactly 2.8 seconds
     task.wait(0.7)
-
-    -- 3. Run 5 Void Drop moves with 1 second wait after each
     runVoidDropSequence()
 
-    -- 4. Set MOVE_STEP = 100000 for 5 seconds on resume/start, then revert to 0.33
     MOVE_STEP = 100000
     task.spawn(function()
         task.wait(5)
@@ -332,7 +371,7 @@ local function performRecoverySequence(onCompleteCallback)
     end)
 
     isRecovering = false
-    if onCompleteCallback then
+    if scriptActive and onCompleteCallback then
         onCompleteCallback()
     end
 end
@@ -361,14 +400,32 @@ local function stopFollowing()
 end
 
 --========================================================--
+-- KILL SCRIPT FUNCTION (Shuts down code entirely)
+--========================================================--
+local function killScript()
+    scriptActive = false
+    stopFollowing()
+    m1Active = false
+    m2Active = false
+    BLOCK_ENABLED = false
+    chat(SCRIPT_PREFIX .. " Script killed by Master Handler.")
+end
+
+--========================================================--
 -- FOLLOW LOOP
 --========================================================--
 
 local lastTick = tick()
 local function startFollowing()
+    if not scriptActive then return end
     if followConnection then followConnection:Disconnect() end
     attackActiveState = true
     followConnection = RunService.Heartbeat:Connect(function()
+        if not scriptActive then
+            if followConnection then followConnection:Disconnect() end
+            return
+        end
+
         local now = tick()
         local dt = now - lastTick
         lastTick = now
@@ -381,25 +438,22 @@ local function startFollowing()
 
         updateHitboxes()
 
-        -- DESTROY MODE
         if mode == "destroy" and destroyTarget then
             destroyTargetPlayer(dt)
             task.wait(DESTROY_SPEED)
             return
         end
 
-        -- ATTACK MODE
         if mode == "attack" and attackTarget then
             local tChar = attackTarget.Character
             if tChar and tChar:FindFirstChild("HumanoidRootPart") then
-                local predicted = getPredictedPosition(tChar.HumanoidRootPart)
+                local predicted = getPredictedPosition(hrp, tChar.HumanoidRootPart)
                 local pos = predicted + Vector3.new(0, FLOAT_HEIGHT, 0)
                 smoothMove(hrp, pos)
             end
             return
         end
 
-        -- IDLE MODE
         if mode == "idle" and parentPlayer.Character then
             local pHRP = parentPlayer.Character:FindFirstChild("HumanoidRootPart")
             if pHRP then
@@ -413,17 +467,19 @@ end
 -- MONITORING HEALTH & ENEMY STATUS DURING ATTACK
 --========================================================--
 
--- Monitor Local Player Health (1-5 HP trigger)
 RunService.Heartbeat:Connect(function()
-    if not attackActiveState or isRecovering then return end
+    if not scriptActive or not attackActiveState or isRecovering then return end
     local char = player.Character
     if char then
         local humanoid = char:FindFirstChildOfClass("Humanoid")
         if humanoid and humanoid.Health > 0 and humanoid.Health <= 5 then
-            attackActiveState = false -- temporarily pause T21 attack
-            performRecoverySequence(function()
-                attackActiveState = true -- resume T21 attack
-            end)
+            if tick() - lastResetTime >= 5 then
+                lastResetTime = tick()
+                attackActiveState = false
+                performRecoverySequence(function()
+                    attackActiveState = true
+                end)
+            end
         end
     end
 end)
@@ -438,11 +494,14 @@ local function monitorTarget(targetPlr)
         local humanoid = tChar:FindFirstChildOfClass("Humanoid")
         if humanoid then
             targetDiedConnection = humanoid.Died:Connect(function()
-                if attackActiveState and not isRecovering and attackTarget == targetPlr then
-                    attackActiveState = false -- temporarily pause T21 attack
-                    performRecoverySequence(function()
-                        attackActiveState = true -- resume T21 attack
-                    end)
+                if scriptActive and attackActiveState and not isRecovering and attackTarget == targetPlr then
+                    if tick() - lastResetTime >= 5 then
+                        lastResetTime = tick()
+                        attackActiveState = false
+                        performRecoverySequence(function()
+                            attackActiveState = true
+                        end)
+                    end
                 end
             end)
         end
@@ -453,25 +512,27 @@ local function monitorTarget(targetPlr)
     end
     targetPlr.CharacterAdded:Connect(function(tChar)
         setupCharMon(tChar)
-        -- If enemy resets/respawns
-        if attackActiveState and not isRecovering and attackTarget == targetPlr then
-            attackActiveState = false
-            performRecoverySequence(function()
-                attackActiveState = true
-            end)
+        if scriptActive and attackActiveState and not isRecovering and attackTarget == targetPlr then
+            if tick() - lastResetTime >= 5 then
+                lastResetTime = tick()
+                attackActiveState = false
+                performRecoverySequence(function()
+                    attackActiveState = true
+                    monitorTarget(targetPlr)
+                end)
+            end
         end
     end)
 
-    -- Enemy leaves server behavior
     targetLeavingConnection = Players.PlayerRemoving:Connect(function(leavingPlr)
         if leavingPlr == targetPlr then
             task.delay(0.5, function()
+                if not scriptActive then return end
                 if not leavingPlr:IsDescendantOf(game) then
                     if attackActiveState and not isRecovering and loopKillTargetName == targetPlr.Name then
                         attackActiveState = false
                         local connectionRejoin
                         connectionRejoin = Players.PlayerAdded:Connect(function(rejoiningPlr)
-                            -- Strict check: if stop was called, loopKillTargetName will be nil or mismatch
                             if not loopKillTargetName or loopKillTargetName ~= targetPlr.Name then
                                 if connectionRejoin then connectionRejoin:Disconnect() end
                                 return
@@ -479,10 +540,13 @@ local function monitorTarget(targetPlr)
                             if rejoiningPlr.Name == targetPlr.Name then
                                 connectionRejoin:Disconnect()
                                 attackTarget = rejoiningPlr
-                                performRecoverySequence(function()
-                                    attackActiveState = true
-                                    monitorTarget(rejoiningPlr)
-                                end)
+                                if tick() - lastResetTime >= 5 then
+                                    lastResetTime = tick()
+                                    performRecoverySequence(function()
+                                        attackActiveState = true
+                                        monitorTarget(rejoiningPlr)
+                                    end)
+                                end
                             end
                         end)
                     end
@@ -497,6 +561,7 @@ end
 --========================================================--
 
 local function runCommand(cmd)
+    if not scriptActive then return end
     lastCommand = cmd
 
     if cmd.type == "idle" then
@@ -525,7 +590,7 @@ local function runCommand(cmd)
         stopFollowing()
 
     elseif cmd.type == "height" then
-        FLOAT_HEIGHT = cmd.val -- Supports negative numbers (e.g. -5)
+        FLOAT_HEIGHT = cmd.val
 
     elseif cmd.type == "immune" then
         immunePlayers[cmd.target] = true
@@ -537,8 +602,20 @@ local function runCommand(cmd)
         BLOCK_ENABLED = cmd.val
 
     elseif cmd.type == "reset" then
-        if not resetUsed then
-            resetUsed = true
+        if (mode == "attack" and attackTarget) or (mode == "destroy" and destroyTarget) then
+            local currentTarget = attackTarget or destroyTarget
+            local currentMode = mode
+            performRecoverySequence(function()
+                mode = currentMode
+                if currentMode == "attack" then
+                    attackTarget = currentTarget
+                else
+                    destroyTarget = currentTarget
+                end
+                monitorTarget(currentTarget)
+                startFollowing()
+            end)
+        else
             local char = player.Character
             if char and char:FindFirstChild("Humanoid") then
                 char.Humanoid.Health = 0
@@ -566,14 +643,31 @@ local function runCommand(cmd)
 end
 
 --========================================================--
--- CHAT LISTENER
+-- CHAT LISTENER (Strict Bot-Specific Prefix Check)
 --========================================================--
 
 local function onChat(plr, msg)
     local m = msg:lower()
+    local prefix = SCRIPT_PREFIX:lower()
 
-    if assigners[plr.Name] then
-        local t = m:match("^t21%s+(.-)%s+controll$")
+    -- This bot ONLY responds if the message starts with its own specific prefix (e.g., "queen", "craken", "anan")
+    if m:sub(1, #prefix + 1) ~= prefix .. " " then
+        return
+    end
+
+    if not isController(plr) and plr ~= parentPlayer then return end
+
+    -- Check for KILL command (Only Master Handlers can trigger this)
+    if m == prefix .. " kill" and masterHandlers[plr.Name] then
+        killScript()
+        return
+    end
+
+    if not scriptActive then return end
+
+    if assigners[plr.Name] or allowedUsers[plr.Name] or masterHandlers[plr.Name] then
+        local controlPattern = "^" .. prefix .. "%s+(.-)%s+controll$"
+        local t = m:match(controlPattern)
         if t then
             local found = findPlayerByFuzzy(t)
             if found then
@@ -583,12 +677,11 @@ local function onChat(plr, msg)
         end
     end
 
-    if plr ~= parentPlayer then return end
+    if m == prefix .. " idle" then runCommand({type = "idle"}) end
+    if m == prefix .. " stop" then runCommand({type = "stop"}) end
 
-    if m == "t21 idle" then runCommand({type = "idle"}) end
-    if m == "t21 stop" then runCommand({type = "stop"}) end
-
-    local a = m:match("^t21 attack%s+(.+)$")
+    local attackPattern = "^" .. prefix .. "%s+attack%s+(.+)$"
+    local a = m:match(attackPattern)
     if a then
         local found = findPlayerByFuzzy(a)
         if found then 
@@ -598,47 +691,49 @@ local function onChat(plr, msg)
         end
     end
 
-    -- Adjusted pattern to allow negative numbers (e.g., t21 height -5)
-    local h = m:match("^t21 height%s+([%-%d]+)$")
+    local heightPattern = "^" .. prefix .. "%s+height%s+([%-%d]+)$"
+    local h = m:match(heightPattern)
     if h then runCommand({type = "height", val = tonumber(h)}) end
 
-    local im = m:match("^t21 immune%s+(.+)$")
+    local immunePattern = "^" .. prefix .. "%s+immune%s+(.+)$"
+    local im = m:match(immunePattern)
     if im then
         local found = findPlayerByFuzzy(im)
         if found then runCommand({type = "immune", target = found}) end
     end
 
-    local uim = m:match("^t21 unimmune%s+(.+)$")
+    local unimmunePattern = "^" .. prefix .. "%s+unimmune%s+(.+)$"
+    local uim = m:match(unimmunePattern)
     if uim then
         local found = findPlayerByFuzzy(uim)
         if found then runCommand({type = "unimmune", target = found}) end
     end
 
-    if m == "t21 block on" then runCommand({type = "block", val = true}) end
-    if m == "t21 block off" then runCommand({type = "block", val = false}) end
+    if m == prefix .. " block on" then runCommand({type = "block", val = true}) end
+    if m == prefix .. " block off" then runCommand({type = "block", val = false}) end
 
-    -- M1 / M2 Commands
-    if m == "t21 m1 on" then m1Active = true end
-    if m == "t21 m1 off" then m1Active = false end
-    if m == "t21 m2 on" then m2Active = true end
-    if m == "t21 m2 off" then m2Active = false end
+    if m == prefix .. " m1 on" then m1Active = true end
+    if m == prefix .. " m1 off" then m1Active = false end
+    if m == prefix .. " m2 on" then m2Active = true end
+    if m == prefix .. " m2 off" then m2Active = false end
 
-    if m == "t21 reset" then
-        resetUsed = false
+    if m == prefix .. " reset" then
         runCommand({type = "reset"})
     end
 
-    if m == "t21 predict on" then runCommand({type = "predict", val = true}) end
-    if m == "t21 predict off" then runCommand({type = "predict", val = false}) end
+    if m == prefix .. " predict on" then runCommand({type = "predict", val = true}) end
+    if m == prefix .. " predict off" then runCommand({type = "predict", val = false}) end
 
-    local lk = m:match("^t21 loopkill%s+(.+)$")
+    local loopKillPattern = "^" .. prefix .. "%s+loopkill%s+(.+)$"
+    local lk = m:match(loopKillPattern)
     if lk then
         local found = findPlayerByFuzzy(lk)
         if found then runCommand({type = "loopkill", target = found}) end
     end
-    if m == "t21 unloopkill" then runCommand({type = "unloopkill"}) end
+    if m == prefix .. " unloopkill" then runCommand({type = "unloopkill"}) end
 
-    local d = m:match("^t21 destroy%s+(.+)$")
+    local destroyPattern = "^" .. prefix .. "%s+destroy%s+(.+)$"
+    local d = m:match(destroyPattern)
     if d then
         local found = findPlayerByFuzzy(d)
         if found then 
@@ -648,17 +743,19 @@ local function onChat(plr, msg)
         end
     end
 
-    local dr = m:match("^t21 destroyradius%s+(%d+)$")
+    local destroyRadiusPattern = "^" .. prefix .. "%s+destroyradius%s+(%d+)$"
+    local dr = m:match(destroyRadiusPattern)
     if dr then
         DESTROY_RADIUS = tonumber(dr)
     end
 
-    local ds = m:match("^t21 destroyspeed%s+(%d+)$")
+    local destroySpeedPattern = "^" .. prefix .. "%s+destroyspeed%s+(%d+)$"
+    local ds = m:match(destroySpeedPattern)
     if ds then
         DESTROY_SPEED = tonumber(ds) / 100
     end
 
-    if m == "t21 destroy off" then
+    if m == prefix .. " destroy off" then
         stopFollowing()
     end
 end
@@ -668,41 +765,4 @@ for _, p in ipairs(Players:GetPlayers()) do
 end
 Players.PlayerAdded:Connect(function(p)
     p.Chatted:Connect(function(msg) onChat(p, msg) end)
-end)
-
---========================================================--
--- LOOPKILL AUTO-RETARGET ON JOIN
---========================================================--
-
-Players.PlayerAdded:Connect(function(p)
-    if loopKillTargetName and p.Name == loopKillTargetName then
-        attackTarget = p
-        mode = "attack"
-        performRecoverySequence(function()
-            monitorTarget(p)
-            startFollowing()
-        end)
-    end
-end)
-
---========================================================--
--- RESPAWN HANDLER
---========================================================--
-
-player.CharacterAdded:Connect(function(char)
-    task.wait(0.5)
-    if lastCommand and lastCommand.type ~= "attack" and lastCommand.type ~= "destroy" and lastCommand.type ~= "stop" then 
-        runCommand(lastCommand) 
-    end
-    if loopKillTargetName and not attackActiveState then
-        local target = findPlayerByFuzzy(loopKillTargetName)
-        if target then
-            mode = "attack"
-            attackTarget = target
-            performRecoverySequence(function()
-                monitorTarget(target)
-                startFollowing()
-            end)
-        end
-    end
 end)
