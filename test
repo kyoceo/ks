@@ -31,6 +31,7 @@ local customConfigs = {
     ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
     ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
     ["slobinio10"] = { prefix = "Slob", title = "Slob System" },
+    ["ceoshirin"] = { prefix = "Kup", title = "Kup System" },
 }
 
 -- Fallback default name if username is not in the custom config above
@@ -55,6 +56,7 @@ local allowedUsers = {
     ["thegoatdangerr"] = true,
     ["mnmnbv555"] = true,
     ["slobinio10"] = true,
+    ["ceoshirin"] = true,
 }
 
 if not allowedUsers[player.Name] then
