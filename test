@@ -99,7 +99,7 @@ chat(SCRIPT_TITLE .. " Script Loaded...")
 task.wait(1)
 chat("Made By Kyoshi")
 task.wait(1)
-chat("Script abuser hunter")
+chat("Report to kyoshi if used for abusing")
 task.wait(1)
 chat(SCRIPT_PREFIX .. " Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy, kill")
 
