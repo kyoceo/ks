@@ -30,6 +30,7 @@ local customConfigs = {
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
     ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
     ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
+    ["Inori_luna"] = { prefix = "Luna", title = "Luna System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -52,6 +53,7 @@ local allowedUsers = {
     ["aly_jxhn"] = true,
     ["thegoatdangerr"] = true,
     ["mnmnbv555"] = true,
+    ["Inori_luna"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -90,7 +92,7 @@ chat(SCRIPT_TITLE .. " Script Loaded...")
 task.wait(1)
 chat("Made By Kyoshi")
 task.wait(1)
-chat("Script abuser hunter")
+chat("Report to kyoshi if abused")
 task.wait(1)
 chat(SCRIPT_PREFIX .. " Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy, kill")
 
