@@ -1,0 +1,1159 @@
+--========================================================--
+--  k SYSTEM (ALPHABETICAL DYNAMIC KILL ALL & ATTACK MODE)
+--========================================================--
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TeleportService = game:GetService("TeleportService")
+
+local player = Players.LocalPlayer
+local parentPlayer = player
+local followConnection = nil
+
+-- States
+local mode = "idle"
+local attackTarget = nil
+local panicMode = false
+
+-- Kill All States
+local killAllRunning = false
+local killAllSessionID = 0
+
+-- Settings
+local FLOAT_HEIGHT = 2.5
+local savedHeightTracker = 2.5
+local MOVE_STEP = 0.35
+local HITBOX_SIZE = 100 -- Set to 100 as requested[cite: 1]
+local BLOCK_ENABLED = false
+local M1_ENABLED = false
+local PREDICT_ENABLED = false
+local PREDICT_FACTOR = 0.18
+
+-- Destroy Settings
+local destroyTarget = nil
+local DESTROY_RADIUS = 20
+local DESTROY_SPEED = 0.1
+
+-- Orbit settings
+local ORBIT_RADIUS = 14
+local ORBIT_SPEED = 6
+local orbitAngle = 0
+local savedOrbitSpeed = ORBIT_SPEED
+
+-- Internal
+local immunePlayers = {}
+local resetUsed = false
+local m1Count = 0
+local targetHealthConnection = nil
+local targetAddedConnection = nil
+local isExecutingVoidCycle = false
+local isApproachingTarget = true
+local m1LoopRunning = false
+local bKeyTriggered = false
+local attackSequenceSessionID = 0
+
+local assigners = {
+	["jhxnna_rxse"] = true,
+}
+assigners[player.Name] = true
+
+-- Forward Declarations
+local startFollowing
+local stopFollowing
+local setupTargetHealthListener
+local runAttackSequence
+local voidReset
+local updateImmuneChecklistUI
+local startKillAll
+
+--========================================================--
+-- VOID & RECOVERY SYSTEM
+--========================================================--
+
+voidReset = function()
+	local character = player.Character
+	if not character then return end
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		hrp.CFrame = hrp.CFrame - Vector3.new(0, 500, 0)
+	end
+end
+
+local function setupRagdollReset(character)
+	local humanoid = character:WaitForChild("Humanoid", 10)
+	if not humanoid then return end
+	task.wait(1)
+
+	local hasReset = false
+	local function doRagdollRecovery()
+		if hasReset or isExecutingVoidCycle then return end
+		hasReset = true
+		
+		if (mode == "attack" and attackTarget) or (killAllRunning and attackTarget) then
+			local currentTarget = attackTarget
+			stopFollowing()
+			isExecutingVoidCycle = true
+			
+			task.spawn(function()
+				attackSequenceSessionID = attackSequenceSessionID + 1
+				local currentSession = attackSequenceSessionID
+
+				local myChar = player.Character
+				if myChar and myChar:FindFirstChild("Humanoid") then
+					myChar.Humanoid.Health = 0
+				end
+				
+				-- Loop 5 times for void recovery sequence
+				for i = 1, 5 do
+					local respawnedChar = player.CharacterAdded:Wait()
+					respawnedChar:WaitForChild("HumanoidRootPart", 5)
+					task.wait(0.3)
+					voidReset()
+				end
+				task.wait(0.3)
+				
+				isExecutingVoidCycle = false
+				
+				if currentTarget and currentTarget.Parent and attackSequenceSessionID == currentSession then
+					FLOAT_HEIGHT = savedHeightTracker
+					mode = "attack"
+					attackTarget = currentTarget
+					startFollowing()
+				end
+			end)
+		end
+	end
+
+	humanoid:GetPropertyChangedSignal("PlatformStand"):Connect(function()
+		if humanoid.PlatformStand then doRagdollRecovery() end
+	end)
+
+	humanoid.StateChanged:Connect(function(_, newState)
+		if newState == Enum.HumanoidStateType.Ragdoll or newState == Enum.HumanoidStateType.Physics then
+			doRagdollRecovery()
+		end
+	end)
+end
+
+if player.Character then
+	task.spawn(setupRagdollReset, player.Character)
+end
+player.CharacterAdded:Connect(setupRagdollReset)
+
+--========================================================--
+-- PLAYER FIND & UTILS
+--========================================================--
+
+local function findPlayerByFuzzy(str)
+	if not str or str == "" then return nil end
+	str = str:lower()
+	local bestMatch = nil
+	local shortestLength = 999
+	
+	for _, plr in ipairs(Players:GetPlayers()) do
+		local name = plr.Name:lower()
+		local disp = plr.DisplayName:lower()
+		if name:find(str) or disp:find(str) then
+			local len = math.min(#name, #disp)
+			if len < shortestLength then
+				shortestLength = len
+				bestMatch = plr
+			end
+		end
+	end
+	return bestMatch
+end
+
+local function updateHitboxes(dt)
+	-- Fixed Blue Color
+	local fixedBlue = Color3.fromRGB(0, 150, 255)
+
+	for _, plr in ipairs(Players:GetPlayers()) do
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			local hrp = char.HumanoidRootPart
+			
+			-- 1. Solid outer outline line (Blue)
+			local selectionBox = hrp:FindFirstChild("KHitboxOutline")
+			if not selectionBox then
+				selectionBox = Instance.new("SelectionBox")
+				selectionBox.Name = "KHitboxOutline"
+				selectionBox.SurfaceTransparency = 1
+				selectionBox.LineThickness = 0.12
+				selectionBox.Parent = hrp
+			end
+
+			-- 2. Semi-transparent inside tint (Blue with 10% opacity / 90% transparency)
+			local insideBox = hrp:FindFirstChild("KHitboxInside")
+			if not insideBox then
+				insideBox = Instance.new("BoxHandleAdornment")
+				insideBox.Name = "KHitboxInside"
+				insideBox.AlwaysOnTop = true
+				insideBox.ZIndex = 5
+				insideBox.Parent = hrp
+			end
+
+			if immunePlayers[plr] or plr == parentPlayer or assigners[plr.Name] then
+				selectionBox.Adornee = nil
+				insideBox.Adornee = nil
+			else
+				selectionBox.Adornee = hrp
+				selectionBox.Color3 = fixedBlue
+
+				insideBox.Adornee = hrp
+				insideBox.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
+				insideBox.Color3 = fixedBlue
+				insideBox.Transparency = 0.90 -- 10% visible (0.90 transparent) as requested
+				
+				hrp.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
+				hrp.Transparency = 1
+			end
+		end
+	end
+end
+
+local function smoothMove(hrp, targetPos, stepSize)
+	local dir = targetPos - hrp.Position
+	local mag = dir.Magnitude
+	if mag < 0.01 then return end
+	dir = dir.Unit
+	local step = math.min(stepSize, mag)
+	local newPos = hrp.Position + dir * (step + 0.15)
+	newPos = Vector3.new(newPos.X, targetPos.Y, newPos.Z)
+	hrp.CFrame = CFrame.new(newPos)
+end
+
+local function getPredictedPosition(targetHRP)
+	if not PREDICT_ENABLED then return targetHRP.Position end
+	return targetHRP.Position + (targetHRP.Velocity * PREDICT_FACTOR)
+end
+
+--========================================================--
+-- ATTACK SEQUENCE (NORMAL MODE)
+--========================================================--
+
+runAttackSequence = function(target)
+	if not target then return end
+	
+	attackSequenceSessionID = attackSequenceSessionID + 1
+	local currentSession = attackSequenceSessionID
+
+	isExecutingVoidCycle = true
+	isApproachingTarget = true
+	bKeyTriggered = false
+	mode = "attack"
+	attackTarget = target
+	
+	setupTargetHealthListener(target)
+
+	if followConnection then 
+		followConnection:Disconnect() 
+		followConnection = nil
+	end
+
+	task.spawn(function()
+		local myChar = player.Character
+		if myChar and myChar:FindFirstChild("Humanoid") then
+			myChar.Humanoid.Health = 0
+		end
+
+		-- Loop 5 times for the double/multiple void sequence
+		for i = 1, 5 do
+			local respawnedChar = player.CharacterAdded:Wait()
+			respawnedChar:WaitForChild("HumanoidRootPart", 5)
+			if attackSequenceSessionID ~= currentSession then return end
+			task.wait(0.3)
+			voidReset()
+		end
+		task.wait(0.3)
+
+		if attackSequenceSessionID ~= currentSession then return end
+
+		isExecutingVoidCycle = false
+		FLOAT_HEIGHT = savedHeightTracker
+		mode = "attack"
+		attackTarget = target
+		setupTargetHealthListener(target)
+		startFollowing()
+	end)
+end
+
+--========================================================--
+-- KILL ALL (A-Z SORTED, DYNAMIC ADD/REMOVE, 1-4 HP SKIP)
+--========================================================--
+
+startKillAll = function()
+	stopFollowing()
+	killAllRunning = true
+	killAllSessionID = killAllSessionID + 1
+	local currentKillSession = killAllSessionID
+
+	task.spawn(function()
+		while killAllRunning and killAllSessionID == currentKillSession do
+			local eligiblePlayers = {}
+			for _, plr in ipairs(Players:GetPlayers()) do
+				if plr ~= player and not assigners[plr.Name] and not immunePlayers[plr] then
+					table.insert(eligiblePlayers, plr)
+				end
+			end
+
+			table.sort(eligiblePlayers, function(a, b)
+				return a.Name:lower() < b.Name:lower()
+			end)
+
+			if #eligiblePlayers == 0 then
+				killAllRunning = false
+				mode = "idle"
+				startFollowing()
+				break
+			end
+
+			local index = 1
+			while index <= #eligiblePlayers and killAllRunning and killAllSessionID == currentKillSession do
+				local targetPlr = eligiblePlayers[index]
+
+				if not targetPlr or not targetPlr.Parent then
+					index = index + 1
+					continue
+				end
+
+				isExecutingVoidCycle = false
+				isApproachingTarget = true
+				mode = "attack"
+				attackTarget = targetPlr
+				
+				if followConnection then 
+					followConnection:Disconnect() 
+					followConnection = nil
+				end
+
+				local myChar = player.Character
+				if myChar and myChar:FindFirstChild("Humanoid") then
+					myChar.Humanoid.Health = 0
+				end
+
+				for i = 1, 5 do
+					local respawnedChar = player.CharacterAdded:Wait()
+					respawnedChar:WaitForChild("HumanoidRootPart", 5)
+					if not killAllRunning or killAllSessionID ~= currentKillSession then break end
+					task.wait(0.2)
+					voidReset()
+				end
+				task.wait(0.2)
+
+				if targetPlr and targetPlr.Parent and killAllRunning and killAllSessionID == currentKillSession then
+					FLOAT_HEIGHT = savedHeightTracker
+					mode = "attack"
+					attackTarget = targetPlr
+					startFollowing()
+				end
+
+				local targetSkipped = false
+				while killAllRunning and killAllSessionID == currentKillSession do
+					if not targetPlr or not targetPlr.Parent then
+						targetSkipped = true
+						break
+					end
+
+					local tChar = targetPlr.Character
+					local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+					
+					if not tChar or not tHum then
+						break
+					end
+					
+					local hp = tHum.Health
+					if hp <= 0 or (hp >= 1 and hp <= 4) then
+						targetSkipped = true
+						break
+					end
+					
+					task.wait(0.05)
+				end
+
+				stopFollowing()
+				task.wait(0.2)
+				
+				index = index + 1
+			end
+			
+			task.wait(0.5) 
+		end
+		killAllRunning = false
+	end)
+end
+
+--========================================================--
+-- DESTROY SYSTEM
+--========================================================--
+
+local function getTargetPosition(target)
+	if target and target.Character then
+		local hrp = target.Character:FindFirstChild("HumanoidRootPart")
+		if hrp then return hrp.Position end
+	end
+	return nil
+end
+
+local function destroyTargetPlayer(dt)
+	if not destroyTarget then return end
+	local char = player.Character
+	if not char then return end
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	local pos = getTargetPosition(destroyTarget)
+	if not hrp or not pos then return end
+
+	orbitAngle = orbitAngle + (ORBIT_SPEED * dt)
+	local offset = Vector3.new(math.cos(orbitAngle)*ORBIT_RADIUS, FLOAT_HEIGHT, math.sin(orbitAngle)*ORBIT_RADIUS)
+	smoothMove(hrp, pos + offset, MOVE_STEP)
+
+	pcall(function()
+		for i=1,2 do
+			ReplicatedStorage.CombatRemote:FireServer("M1")
+			task.wait(0.03)
+			ReplicatedStorage.CombatRemote:FireServer("M2")
+			task.wait(0.03)
+		end
+		if BLOCK_ENABLED then ReplicatedStorage.CombatRemote:FireServer("Block") end
+	end)
+end
+
+--========================================================--
+-- FOLLOW LOOP
+--========================================================--
+
+local lastTick = tick()
+startFollowing = function()
+	if followConnection then followConnection:Disconnect() end
+	followConnection = RunService.Heartbeat:Connect(function()
+		if panicMode or isExecutingVoidCycle then return end
+
+		local now = tick()
+		local dt = now - lastTick
+		lastTick = now
+
+		local char = player.Character
+		if not char then return end
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+
+		updateHitboxes(dt)
+
+		if mode == "destroy" and destroyTarget then
+			destroyTargetPlayer(dt)
+			task.wait(DESTROY_SPEED)
+			return
+		end
+
+		if mode == "attack" and attackTarget then
+			local tChar = attackTarget.Character
+			if tChar and tChar:FindFirstChild("HumanoidRootPart") then
+				local humanoid = tChar:FindFirstChildOfClass("Humanoid")
+				
+				if humanoid and not killAllRunning and not bKeyTriggered then
+					local hp = humanoid.Health
+					if hp >= 1 and hp <= 4 then
+						bKeyTriggered = true
+						FLOAT_HEIGHT = 0
+						task.spawn(function()
+							task.wait(2)
+							VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.B, false, game)
+							task.wait(0.05)
+							VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.B, false, game)
+						end)
+					end
+				end
+
+				local targetHRP = tChar.HumanoidRootPart
+				local predicted = getPredictedPosition(targetHRP)
+				local pos = predicted + Vector3.new(0, FLOAT_HEIGHT, 0)
+				
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+				local currentStep = isApproachingTarget and 1000 or 30
+				if isApproachingTarget and distance <= (HITBOX_SIZE / 2) then
+					isApproachingTarget = false
+				end
+
+				smoothMove(hrp, pos, currentStep)
+
+				pcall(function()
+					if not M1_ENABLED then
+						ReplicatedStorage.CombatRemote:FireServer("M1")
+						m1Count = m1Count + 1
+						task.wait(0.05)
+						if m1Count >= 5 then
+							ReplicatedStorage.CombatRemote:FireServer("M2")
+							m1Count = 0
+						end
+					end
+					if BLOCK_ENABLED then ReplicatedStorage.CombatRemote:FireServer("Block") end
+				end)
+			end
+			return
+		end
+
+		if mode == "idle" and parentPlayer.Character then
+			local pHRP = parentPlayer.Character:FindFirstChild("HumanoidRootPart")
+			if pHRP then
+				smoothMove(hrp, pHRP.Position + Vector3.new(0, FLOAT_HEIGHT, 4), 30)
+			end
+		end
+	end)
+end
+
+stopFollowing = function()
+	if not killAllRunning then
+		killAllSessionID = killAllSessionID + 1
+	end
+	attackSequenceSessionID = attackSequenceSessionID + 1
+	isExecutingVoidCycle = false
+
+	if followConnection then followConnection:Disconnect() end
+	followConnection = nil
+	if targetHealthConnection then targetHealthConnection:Disconnect() end
+	targetHealthConnection = nil
+	if targetAddedConnection then targetAddedConnection:Disconnect() end
+	targetAddedConnection = nil
+	
+	if not killAllRunning then
+		mode = "stop"
+		attackTarget = nil
+		destroyTarget = nil
+	end
+	ORBIT_SPEED = savedOrbitSpeed
+end
+
+--========================================================--
+-- HEALTH & DEATH LISTENER
+--========================================================--
+
+setupTargetHealthListener = function(target)
+	if targetHealthConnection then targetHealthConnection:Disconnect() end
+	if targetAddedConnection then targetAddedConnection:Disconnect() end
+	
+	local function monitorCharacter(char)
+		local humanoid = char:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			targetHealthConnection = humanoid.Died:Connect(function()
+				if mode == "attack" and attackTarget == target and not isExecutingVoidCycle and not killAllRunning then
+					runAttackSequence(target)
+				end
+			end)
+		end
+	end
+
+	if target.Character then monitorCharacter(target.Character) end
+	targetAddedConnection = target.CharacterAdded:Connect(function(char)
+		task.wait(0.5)
+		if mode == "attack" and attackTarget == target and not isExecutingVoidCycle and not killAllRunning then
+			monitorCharacter(char)
+		end
+	end)
+end
+
+--========================================================--
+-- COMMAND HANDLER & CHAT INTERFACE
+--========================================================--
+
+local function runCommand(cmd)
+	if cmd.type=="idle" then
+		stopFollowing()
+		killAllRunning = false
+		mode="idle"
+		isApproachingTarget = true
+		startFollowing()
+	elseif cmd.type=="attack" and cmd.target then
+		killAllRunning = false
+		runAttackSequence(cmd.target)
+	elseif cmd.type=="killall" then
+		startKillAll()
+	elseif cmd.type=="destroy" and cmd.target then
+		stopFollowing()
+		killAllRunning = false
+		savedOrbitSpeed = ORBIT_SPEED
+		ORBIT_SPEED = 200
+		mode="destroy"
+		destroyTarget = cmd.target
+		isApproachingTarget = true
+		startFollowing()
+	elseif cmd.type=="stop" then
+		killAllRunning = false
+		stopFollowing()
+	elseif cmd.type=="height" then
+		FLOAT_HEIGHT = cmd.val
+		savedHeightTracker = cmd.val
+	elseif cmd.type=="immune" and cmd.target then
+		immunePlayers[cmd.target] = true
+		updateImmuneChecklistUI()
+	elseif cmd.type=="unimmune" and cmd.target then
+		immunePlayers[cmd.target] = nil
+		updateImmuneChecklistUI()
+	elseif cmd.type=="block" then
+		BLOCK_ENABLED = cmd.val
+	elseif cmd.type=="m1" then
+		M1_ENABLED = cmd.val
+		if M1_ENABLED and not m1LoopRunning then
+			m1LoopRunning = true
+			task.spawn(function()
+				local CombatRemote = ReplicatedStorage:WaitForChild("CombatRemote")
+				while M1_ENABLED do
+					CombatRemote:FireServer("M1")
+					task.wait(0)
+				end
+				m1LoopRunning = false
+			end)
+		end
+	elseif cmd.type=="reset" then
+		if not resetUsed then
+			resetUsed = true
+			local char = player.Character
+			if char and char:FindFirstChild("Humanoid") then char.Humanoid.Health = 0 end
+		end
+	elseif cmd.type=="predict" then
+		PREDICT_ENABLED = cmd.val
+	elseif cmd.type=="loopkill" and cmd.target then
+		killAllRunning = false
+		runAttackSequence(cmd.target)
+	elseif cmd.type=="unloopkill" then
+		killAllRunning = false
+		stopFollowing()
+		mode="idle"
+		isApproachingTarget = true
+		startFollowing()
+	end
+end
+
+local function processChat(plr, msg)
+	local m = msg:lower()
+	if assigners[plr.Name] then
+		local t = m:match("^k%s+(.-)%s+controll$")
+		if t then
+			local found = findPlayerByFuzzy(t)
+			if found then parentPlayer = found end
+			return
+		end
+	end
+
+	if plr ~= parentPlayer then return end
+
+	if m == "k idle" then runCommand({type="idle"}) end
+	if m == "k stop" then runCommand({type="stop"}) end
+	if m == "k killall" then runCommand({type="killall"}) end
+
+	local a = m:match("^k attack%s+(.+)$")
+	if a then
+		local found = findPlayerByFuzzy(a)
+		if found then runCommand({type="attack", target=found}) end
+	end
+
+	local h = m:match("^k height%s+(%d+)$")
+	if h then runCommand({type="height", val=tonumber(h)}) end
+
+	local im = m:match("^k immune%s+(.+)$")
+	if im then
+		local found = findPlayerByFuzzy(im)
+		if found then runCommand({type="immune", target=found}) end
+	end
+
+	local uim = m:match("^k unimmune%s+(.+)$")
+	if uim then
+		local found = findPlayerByFuzzy(uim)
+		if found then runCommand({type="unimmune", target=found}) end
+	end
+
+	if m == "k block on" then runCommand({type="block", val=true}) end
+	if m == "k block off" then runCommand({type="block", val=false}) end
+	if m == "k m1 on" then runCommand({type="m1", val=true}) end
+	if m == "k m1 off" then runCommand({type="m1", val=false}) end
+
+	if m == "k reset" then
+		resetUsed = false
+		runCommand({type="reset"})
+	end
+
+	if m == "k predict on" then runCommand({type="predict", val=true}) end
+	if m == "k predict off" then runCommand({type="predict", val=false}) end
+
+	local lk = m:match("^k loopkill%s+(.+)$")
+	if lk then
+		local found = findPlayerByFuzzy(lk)
+		if found then runCommand({type="loopkill", target=found}) end
+	end
+	if m == "k unloopkill" then runCommand({type="unloopkill"}) end
+
+	local d = m:match("^k destroy%s+(.+)$")
+	if d then
+		local found = findPlayerByFuzzy(d)
+		if found then runCommand({type="destroy", val=true, target=found}) end
+	end
+	if m == "k destroy off" then stopFollowing() end
+end
+
+local function bindPlayerChat(p)
+	p.Chatted:Connect(function(msg) processChat(p, msg) end)
+end
+
+for _, p in ipairs(Players:GetPlayers()) do bindPlayerChat(p) end
+Players.PlayerAdded:Connect(bindPlayerChat)
+
+--========================================================--
+-- GUI SETUP
+--========================================================--
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KScriptGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 160, 0, 395)
+mainFrame.Position = UDim2.new(0, 20, 0, 40)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 6)
+
+local outerFrameGrip = Instance.new("Frame")
+outerFrameGrip.Name = "OuterGrip"
+outerFrameGrip.Size = UDim2.new(1, 0, 1, 0)
+outerFrameGrip.BackgroundTransparency = 1
+outerFrameGrip.ZIndex = 5
+outerFrameGrip.Parent = mainFrame
+
+local function createBorderSegment(pos, size)
+	local seg = Instance.new("Frame")
+	seg.Size = size
+	seg.Position = pos
+	seg.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	seg.BorderSizePixel = 0
+	seg.ZIndex = 5
+	seg.Parent = outerFrameGrip
+	return seg
+end
+
+createBorderSegment(UDim2.new(0, 0, 0, 0),    UDim2.new(1, 0, 0, 12))  
+createBorderSegment(UDim2.new(0, 0, 1, -12),  UDim2.new(1, 0, 0, 12))  
+createBorderSegment(UDim2.new(0, 0, 0, 12),    UDim2.new(0, 12, 1, -24)) 
+createBorderSegment(UDim2.new(1, -12, 0, 12), UDim2.new(0, 12, 1, -24)) 
+
+local scrollContainer = Instance.new("ScrollingFrame")
+scrollContainer.Size = UDim2.new(1, -34, 1, -36)
+scrollContainer.Position = UDim2.new(0, 15, 0, 32)
+scrollContainer.BackgroundTransparency = 1
+scrollContainer.BorderSizePixel = 0
+scrollContainer.CanvasSize = UDim2.new(0, 0, 0, 780)
+scrollContainer.ScrollBarThickness = 0
+scrollContainer.Parent = mainFrame
+
+local scrollHandle = Instance.new("TextButton")
+scrollHandle.Name = "ScrollHandle"
+scrollHandle.Size = UDim2.new(0, 16, 0, 50)
+scrollHandle.Position = UDim2.new(1, -20, 0, 35)
+scrollHandle.BackgroundColor3 = Color3.fromRGB(110, 110, 110)
+scrollHandle.Text = "]  ]\n]  ]"
+scrollHandle.TextColor3 = Color3.fromRGB(20, 20, 20)
+scrollHandle.TextSize = 9
+scrollHandle.Font = Enum.Font.SourceSansBold
+scrollHandle.ZIndex = 6
+scrollHandle.Parent = mainFrame
+Instance.new("UICorner", scrollHandle).CornerRadius = UDim.new(0, 3)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 22, 0, 22)
+closeBtn.Position = UDim2.new(1, -6, 0, -10)
+closeBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 10
+closeBtn.Font = Enum.Font.SourceSansBold
+closeBtn.ZIndex = 12
+closeBtn.Parent = mainFrame
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
+
+local floatCircle = Instance.new("TextButton")
+floatCircle.Size = UDim2.new(0, 40, 0, 40)
+floatCircle.Position = UDim2.new(0, 20, 0, 20)
+floatCircle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+floatCircle.Text = "K"
+floatCircle.TextColor3 = Color3.fromRGB(255, 255, 255)
+floatCircle.TextSize = 14
+floatCircle.Font = Enum.Font.SourceSansBold
+floatCircle.Visible = false
+floatCircle.ZIndex = 50
+floatCircle.Parent = screenGui
+Instance.new("UICorner", floatCircle).CornerRadius = UDim.new(1, 0)
+
+local headerBar = Instance.new("Frame")
+headerBar.Size = UDim2.new(1, -30, 0, 24)
+headerBar.Position = UDim2.new(0, 12, 0, 4)
+headerBar.BackgroundTransparency = 1
+headerBar.ZIndex = 8
+headerBar.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "k script"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 11
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.ZIndex = 8
+titleLabel.Parent = headerBar
+
+local windowDragging, windowDragStart, windowStartPos = false, nil, nil
+local circleDragging, circleDragStart, circleStartPos, circleMoved = false, nil, nil, false
+
+local function isInsideObject(obj, pos)
+	local absPos = obj.AbsolutePosition
+	local absSize = obj.AbsoluteSize
+	return pos.X >= absPos.X and pos.X <= absPos.X + absSize.X and
+	       pos.Y >= absPos.Y and pos.Y <= absPos.Y + absSize.Y
+end
+
+UserInputService.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if mainFrame.Visible and isInsideObject(mainFrame, input.Position) then
+			if isInsideObject(scrollHandle, input.Position) or isInsideObject(closeBtn, input.Position) then return end
+			windowDragging = true
+			windowDragStart = input.Position
+			windowStartPos = mainFrame.Position
+		elseif floatCircle.Visible and isInsideObject(floatCircle, input.Position) then
+			circleDragging = true
+			circleDragStart = input.Position
+			circleStartPos = floatCircle.Position
+			circleMoved = false
+		end
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		if windowDragging then
+			local delta = input.Position - windowDragStart
+			mainFrame.Position = UDim2.new(windowStartPos.X.Scale, windowStartPos.X.Offset + delta.X, windowStartPos.Y.Scale, windowStartPos.Y.Offset + delta.Y)
+		elseif circleDragging then
+			local delta = input.Position - circleDragStart
+			if delta.Magnitude > 5 then circleMoved = true end
+			floatCircle.Position = UDim2.new(circleStartPos.X.Scale, circleStartPos.X.Offset + delta.X, circleStartPos.Y.Scale, circleStartPos.Y.Offset + delta.Y)
+		end
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if circleDragging and not circleMoved then
+			floatCircle.Visible = false
+			mainFrame.Size = UDim2.new(0, 0, 0, 0)
+			mainFrame.Position = floatCircle.Position
+			mainFrame.Visible = true
+			closeBtn.Visible = true
+			TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 160, 0, 395)}):Play()
+		end
+		windowDragging = false
+		circleDragging = false
+	end
+end)
+
+local yOffset = 5
+
+local function createRow(name, defaultVal, isFloat, callback)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 0, 14)
+	label.Position = UDim2.new(0, 0, 0, yOffset)
+	label.BackgroundTransparency = 1
+	label.Text = name .. ": " .. tostring(defaultVal)
+	label.TextColor3 = Color3.fromRGB(200, 200, 200)
+	label.TextSize = 9
+	label.Font = Enum.Font.SourceSans
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = scrollContainer
+	yOffset = yOffset + 14
+
+	local btnMinus = Instance.new("TextButton")
+	btnMinus.Size = UDim2.new(0, 20, 0, 18)
+	btnMinus.Position = UDim2.new(0, 0, 0, yOffset)
+	btnMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	btnMinus.Text = "-"
+	btnMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btnMinus.TextSize = 10
+	btnMinus.Parent = scrollContainer
+
+	local btnPlus = Instance.new("TextButton")
+	btnPlus.Size = UDim2.new(0, 20, 0, 18)
+	btnPlus.Position = UDim2.new(0, 22, 0, yOffset)
+	btnPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	btnPlus.Text = "+"
+	btnPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btnPlus.TextSize = 10
+	btnPlus.Parent = scrollContainer
+
+	local valBox = Instance.new("TextBox")
+	valBox.Size = UDim2.new(0, 68, 0, 18)
+	valBox.Position = UDim2.new(0, 44, 0, yOffset)
+	valBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	valBox.Text = tostring(defaultVal)
+	valBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	valBox.TextSize = 9
+	valBox.Font = Enum.Font.SourceSans
+	valBox.ClearTextOnFocus = false
+	valBox.Parent = scrollContainer
+	Instance.new("UICorner", valBox).CornerRadius = UDim.new(0, 3)
+
+	local currentVal = defaultVal
+	local function update(val)
+		currentVal = val
+		if isFloat then
+			valBox.Text = string.format("%.2f", currentVal)
+			label.Text = name .. ": " .. string.format("%.2f", currentVal)
+		else
+			valBox.Text = tostring(currentVal)
+			label.Text = name .. ": " .. tostring(currentVal)
+		end
+		callback(currentVal)
+	end
+
+	btnMinus.MouseButton1Click:Connect(function()
+		if isFloat then update(math.max(0, currentVal - 0.01)) else update(currentVal - 1) end
+	end)
+	btnPlus.MouseButton1Click:Connect(function()
+		if isFloat then update(currentVal + 0.01) else update(currentVal + 1) end
+	end)
+	valBox.FocusLost:Connect(function()
+		local num = tonumber(valBox.Text)
+		if num then update(num) else update(currentVal) end
+	end)
+
+	yOffset = yOffset + 23
+end
+
+createRow("Height", FLOAT_HEIGHT, true, function(v) FLOAT_HEIGHT = v; savedHeightTracker = v end)
+createRow("MoveStep", MOVE_STEP, false, function(v) MOVE_STEP = v end)
+createRow("Hitbox", HITBOX_SIZE, false, function(v) HITBOX_SIZE = v end)
+createRow("PredFact", PREDICT_FACTOR, true, function(v) PREDICT_FACTOR = v end)
+
+local function createToggleRow(name, initialState, callback)
+	local toggleBtn = Instance.new("TextButton")
+	toggleBtn.Size = UDim2.new(1, -6, 0, 20)
+	toggleBtn.Position = UDim2.new(0, 0, 0, yOffset)
+	toggleBtn.BackgroundColor3 = initialState and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(120, 0, 0)
+	toggleBtn.Text = name .. ": " .. (initialState and "ON" or "OFF")
+	toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	toggleBtn.TextSize = 9
+	toggleBtn.Font = Enum.Font.SourceSansBold
+	toggleBtn.Parent = scrollContainer
+	Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 3)
+
+	local state = initialState
+	toggleBtn.MouseButton1Click:Connect(function()
+		state = not state
+		toggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(120, 0, 0)
+		toggleBtn.Text = name .. ": " .. (state and "ON" or "OFF")
+		callback(state)
+	end)
+
+	yOffset = yOffset + 23
+end
+
+createToggleRow("Block", BLOCK_ENABLED, function(state) BLOCK_ENABLED = state end)
+createToggleRow("M1", M1_ENABLED, function(state) runCommand({type="m1", val=state}) end)
+createToggleRow("Predict", PREDICT_ENABLED, function(state) PREDICT_ENABLED = state end)
+
+local function createActionRow(text, color, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -6, 0, 20)
+	btn.Position = UDim2.new(0, 0, 0, yOffset)
+	btn.BackgroundColor3 = color
+	btn.Text = text
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.TextSize = 9
+	btn.Font = Enum.Font.SourceSansBold
+	btn.Parent = scrollContainer
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+
+	btn.MouseButton1Click:Connect(callback)
+	yOffset = yOffset + 23
+end
+
+createActionRow("Stop", Color3.fromRGB(110, 35, 35), function() runCommand({type="stop"}) end)
+createActionRow("Reset", Color3.fromRGB(110, 70, 35), function() resetUsed = false; runCommand({type="reset"}) end)
+createActionRow("Idle", Color3.fromRGB(35, 70, 110), function() runCommand({type="idle"}) end)
+createActionRow("Kill All", Color3.fromRGB(130, 70, 35), function() runCommand({type="killall"}) end)
+
+createActionRow("Rejoin", Color3.fromRGB(70, 70, 110), function()
+	local placeId = game.PlaceId
+	local jobId = game.JobId
+	if jobId and jobId ~= "" then
+		TeleportService:TeleportToPlaceInstance(placeId, jobId, player)
+	else
+		TeleportService:Teleport(placeId, player)
+	end
+end)
+
+local function createSearchRow(placeholder, buttonText, buttonColor, callback)
+	local box = Instance.new("TextBox")
+	box.Size = UDim2.new(1, -6, 0, 18)
+	box.Position = UDim2.new(0, 0, 0, yOffset)
+	box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	box.PlaceholderText = placeholder
+	box.Text = ""
+	box.TextColor3 = Color3.fromRGB(255, 255, 255)
+	box.TextSize = 9
+	box.Font = Enum.Font.SourceSans
+	box.ClearTextOnFocus = false
+	box.Parent = scrollContainer
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 3)
+
+	yOffset = yOffset + 20
+
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -6, 0, 20)
+	btn.Position = UDim2.new(0, 0, 0, yOffset)
+	btn.BackgroundColor3 = buttonColor
+	btn.Text = buttonText
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.TextSize = 9
+	btn.Font = Enum.Font.SourceSansBold
+	btn.Parent = scrollContainer
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+
+	btn.MouseButton1Click:Connect(function()
+		local found = findPlayerByFuzzy(box.Text)
+		if found then callback(found) end
+	end)
+
+	yOffset = yOffset + 25
+	return box
+end
+
+createSearchRow("Attack Target", "Attack", Color3.fromRGB(90, 35, 130), function(target)
+	runCommand({type="attack", target=target})
+end)
+
+createSearchRow("Destroy Target", "Destroy", Color3.fromRGB(130, 35, 35), function(target)
+	savedOrbitSpeed = ORBIT_SPEED
+	ORBIT_SPEED = 200
+	runCommand({type="destroy", val=true, target=target})
+end)
+
+local immuneSearchBox = Instance.new("TextBox")
+immuneSearchBox.Size = UDim2.new(1, -6, 0, 18)
+immuneSearchBox.Position = UDim2.new(0, 0, 0, yOffset)
+immuneSearchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+immuneSearchBox.PlaceholderText = "Immune/Unimmune Player"
+immuneSearchBox.Text = ""
+immuneSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+immuneSearchBox.TextSize = 9
+immuneSearchBox.Font = Enum.Font.SourceSans
+immuneSearchBox.ClearTextOnFocus = false
+immuneSearchBox.Parent = scrollContainer
+Instance.new("UICorner", immuneSearchBox).CornerRadius = UDim.new(0, 3)
+
+yOffset = yOffset + 20
+
+local immuneBtn = Instance.new("TextButton")
+immuneBtn.Size = UDim2.new(0.5, -3, 0, 20)
+immuneBtn.Position = UDim2.new(0, 0, 0, yOffset)
+immuneBtn.BackgroundColor3 = Color3.fromRGB(40, 100, 40)
+immuneBtn.Text = "Immune"
+immuneBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+immuneBtn.TextSize = 9
+immuneBtn.Font = Enum.Font.SourceSansBold
+immuneBtn.Parent = scrollContainer
+Instance.new("UICorner", immuneBtn).CornerRadius = UDim.new(0, 3)
+
+immuneBtn.MouseButton1Click:Connect(function()
+	local found = findPlayerByFuzzy(immuneSearchBox.Text)
+	if found then runCommand({type="immune", target=found}) end
+end)
+
+local unimmuneBtn = Instance.new("TextButton")
+unimmuneBtn.Size = UDim2.new(0.5, -3, 0, 20)
+unimmuneBtn.Position = UDim2.new(0.5, 3, 0, yOffset)
+unimmuneBtn.BackgroundColor3 = Color3.fromRGB(100, 40, 40)
+unimmuneBtn.Text = "Unimmune"
+unimmuneBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+unimmuneBtn.TextSize = 9
+unimmuneBtn.Font = Enum.Font.SourceSansBold
+unimmuneBtn.Parent = scrollContainer
+Instance.new("UICorner", unimmuneBtn).CornerRadius = UDim.new(0, 3)
+
+unimmuneBtn.MouseButton1Click:Connect(function()
+	local found = findPlayerByFuzzy(immuneSearchBox.Text)
+	if found then runCommand({type="unimmune", target=found}) end
+end)
+
+yOffset = yOffset + 25
+
+local checklistLabel = Instance.new("TextLabel")
+checklistLabel.Size = UDim2.new(1, 0, 0, 14)
+checklistLabel.Position = UDim2.new(0, 0, 0, yOffset)
+checklistLabel.BackgroundTransparency = 1
+checklistLabel.Text = "Immune Checklist Box:"
+checklistLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+checklistLabel.TextSize = 9
+checklistLabel.Font = Enum.Font.SourceSansBold
+checklistLabel.TextXAlignment = Enum.TextXAlignment.Left
+checklistLabel.Parent = scrollContainer
+yOffset = yOffset + 16
+
+local checklistScroll = Instance.new("ScrollingFrame")
+checklistScroll.Size = UDim2.new(1, -6, 0, 60)
+checklistScroll.Position = UDim2.new(0, 0, 0, yOffset)
+checklistScroll.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+checklistScroll.BorderSizePixel = 0
+checklistScroll.ScrollBarThickness = 3
+checklistScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+checklistScroll.Parent = scrollContainer
+Instance.new("UICorner", checklistScroll).CornerRadius = UDim.new(0, 3)
+
+local checklistLayout = Instance.new("UIListLayout")
+checklistLayout.Padding = UDim.new(0, 2)
+checklistLayout.Parent = checklistScroll
+
+checklistLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	checklistScroll.CanvasSize = UDim2.new(0, 0, 0, checklistLayout.AbsoluteContentSize.Y + 4)
+end)
+
+updateImmuneChecklistUI = function()
+	for _, child in ipairs(checklistScroll:GetChildren()) do
+		if child:IsA("TextLabel") then child:Destroy() end
+	end
+	for playerObj, isImmune in pairs(immunePlayers) do
+		if isImmune and playerObj and playerObj.Parent then
+			local itemLabel = Instance.new("TextLabel")
+			itemLabel.Size = UDim2.new(1, -4, 0, 18)
+			itemLabel.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+			itemLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+			itemLabel.TextSize = 9
+			itemLabel.Font = Enum.Font.SourceSans
+			itemLabel.Text = " [IMMUNE] " .. playerObj.DisplayName
+			itemLabel.TextXAlignment = Enum.TextXAlignment.Left
+			itemLabel.Parent = checklistScroll
+			Instance.new("UICorner", itemLabel).CornerRadius = UDim.new(0, 3)
+		end
+	end
+end
+
+yOffset = yOffset + 68
+scrollContainer.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+
+closeBtn.MouseButton1Click:Connect(function()
+	closeBtn.Visible = false
+	local tw = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), Transparency = 1})
+	tw:Play()
+	tw.Completed:Connect(function()
+		mainFrame.Visible = false
+		mainFrame.Size = UDim2.new(0, 160, 0, 395)
+		mainFrame.Transparency = 0
+		floatCircle.Position = mainFrame.Position
+		floatCircle.Visible = true
+	end)
+end)
