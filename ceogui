@@ -28,15 +28,28 @@ local killAllSessionID = 0
 local FLOAT_HEIGHT = 2.5
 local savedHeightTracker = 2.5
 local MOVE_STEP = 0.35
-local HITBOX_SIZE = 100 -- Set to 100 as requested[cite: 1]
+local HITBOX_SIZE = 100
 local BLOCK_ENABLED = false
 local M1_ENABLED = false
 local PREDICT_ENABLED = false
 local PREDICT_FACTOR = 0.18
 
+-- Custom Palette Color Cycling Settings (1 Second Interval using image colors)
+local colorList = {
+	Color3.fromHex("#eaeaeef"),
+	Color3.fromHex("#d5d2e4"),
+	Color3.fromHex("#f1dde6"),
+	Color3.fromHex("#bab7cc")
+}
+
+local colorIndex = 1
+local nextColorIndex = 2
+local colorTimer = 0
+local COLOR_CHANGE_INTERVAL = 1.0
+
 -- Destroy Settings
 local destroyTarget = nil
-local DESTROY_RADIUS = 20
+local DESTROY_RADIUS = 14
 local DESTROY_SPEED = 0.1
 
 -- Orbit settings
@@ -108,7 +121,6 @@ local function setupRagdollReset(character)
 					myChar.Humanoid.Health = 0
 				end
 				
-				-- Loop 5 times for void recovery sequence
 				for i = 1, 5 do
 					local respawnedChar = player.CharacterAdded:Wait()
 					respawnedChar:WaitForChild("HumanoidRootPart", 5)
@@ -170,25 +182,33 @@ local function findPlayerByFuzzy(str)
 end
 
 local function updateHitboxes(dt)
-	-- Fixed Blue Color
-	local fixedBlue = Color3.fromRGB(0, 150, 255)
+	colorTimer = colorTimer + dt
+	local alpha = math.clamp(colorTimer / COLOR_CHANGE_INTERVAL, 0, 1)
+	
+	if colorTimer >= COLOR_CHANGE_INTERVAL then
+		colorTimer = 0
+		colorIndex = nextColorIndex
+		nextColorIndex = colorIndex % #colorList + 1
+	end
+	
+	local currentColor = colorList[colorIndex]:Lerp(colorList[nextColorIndex], alpha)
 
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
 			local hrp = char.HumanoidRootPart
 			
-			-- 1. Solid outer outline line (Blue)
+			-- 1. Outer outline set to 100% visible (SurfaceTransparency = 0)
 			local selectionBox = hrp:FindFirstChild("KHitboxOutline")
 			if not selectionBox then
 				selectionBox = Instance.new("SelectionBox")
 				selectionBox.Name = "KHitboxOutline"
-				selectionBox.SurfaceTransparency = 1
 				selectionBox.LineThickness = 0.12
 				selectionBox.Parent = hrp
 			end
+			selectionBox.SurfaceTransparency = 0 -- 100% visible solid outline
 
-			-- 2. Semi-transparent inside tint (Blue with 10% opacity / 90% transparency)
+			-- 2. Inside box set to ~3% visible (Transparency = 0.97, matching 1-5% range)
 			local insideBox = hrp:FindFirstChild("KHitboxInside")
 			if not insideBox then
 				insideBox = Instance.new("BoxHandleAdornment")
@@ -203,12 +223,12 @@ local function updateHitboxes(dt)
 				insideBox.Adornee = nil
 			else
 				selectionBox.Adornee = hrp
-				selectionBox.Color3 = fixedBlue
+				selectionBox.Color3 = Color3.fromRGB(0, 150, 255)
 
 				insideBox.Adornee = hrp
 				insideBox.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
-				insideBox.Color3 = fixedBlue
-				insideBox.Transparency = 0.90 -- 10% visible (0.90 transparent) as requested
+				insideBox.Color3 = currentColor
+				insideBox.Transparency = 0.97 -- 3% visibility (1-5% requested range)
 				
 				hrp.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
 				hrp.Transparency = 1
@@ -234,7 +254,7 @@ local function getPredictedPosition(targetHRP)
 end
 
 --========================================================--
--- ATTACK SEQUENCE (NORMAL MODE)
+-- ATTACK SEQUENCE
 --========================================================--
 
 runAttackSequence = function(target)
@@ -262,7 +282,6 @@ runAttackSequence = function(target)
 			myChar.Humanoid.Health = 0
 		end
 
-		-- Loop 5 times for the double/multiple void sequence
 		for i = 1, 5 do
 			local respawnedChar = player.CharacterAdded:Wait()
 			respawnedChar:WaitForChild("HumanoidRootPart", 5)
@@ -284,7 +303,7 @@ runAttackSequence = function(target)
 end
 
 --========================================================--
--- KILL ALL (A-Z SORTED, DYNAMIC ADD/REMOVE, 1-4 HP SKIP)
+-- KILL ALL
 --========================================================--
 
 startKillAll = function()
