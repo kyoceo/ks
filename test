@@ -31,6 +31,7 @@ local customConfigs = {
     ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
     ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
     ["Inori_luna"] = { prefix = "Luna", title = "Luna System" },
+    ["Shutterz_0204"] = { prefix = "Akumu", title = "Akumu System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -54,6 +55,7 @@ local allowedUsers = {
     ["thegoatdangerr"] = true,
     ["mnmnbv555"] = true,
     ["Inori_luna"] = true,
+    ["Shutterz_0204"] = true,
 }
 
 if not allowedUsers[player.Name] then
