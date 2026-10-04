@@ -113,7 +113,7 @@ local MOVE_STEP = 1000000
 local HITBOX_SIZE = 100
 local BLOCK_ENABLED = true
 local PREDICT_ENABLED = true
-local PREDICT_FACTOR = 0.1
+local PREDICT_FACTOR = 0.4
 local loopKillTargetName = nil
 
 -- Auto Combat Settings
@@ -124,7 +124,7 @@ local COMBAT_COOLDOWN = 0
 -- Destroy Settings
 local destroyTarget = nil
 local DESTROY_RADIUS = 20
-local DESTROY_SPEED = 0.1
+local DESTROY_SPEED = 0.4
 local destroyMode = false
 
 -- Orbit settings for destroy mode
@@ -329,7 +329,7 @@ local function moveToVoidQuickly()
         end
     end)
 
-    task.wait(0.5)
+    task.wait(0.6)
 end
 
 --========================================================--
@@ -437,7 +437,7 @@ local function runCustomAttackLoop(target)
             
             -- Wait for 3 seconds
             local elapsed = 0
-            while elapsed < 2 and scriptActive and attackLoopActive and attackTarget do
+            while elapsed < 1.5 and scriptActive and attackLoopActive and attackTarget do
                 task.wait(0.1)
                 elapsed = elapsed + 0.1
             end
