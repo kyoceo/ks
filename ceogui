@@ -34,18 +34,8 @@ local M1_ENABLED = false
 local PREDICT_ENABLED = false
 local PREDICT_FACTOR = 0.18
 
--- Custom Palette Color Cycling Settings (1 Second Interval using image colors)
-local colorList = {
-	Color3.fromHex("#eaeaeef"),
-	Color3.fromHex("#d5d2e4"),
-	Color3.fromHex("#f1dde6"),
-	Color3.fromHex("#bab7cc")
-}
-
-local colorIndex = 1
-local nextColorIndex = 2
-local colorTimer = 0
-local COLOR_CHANGE_INTERVAL = 1.0
+-- Fixed Solo Color Settings (#bab7cc with higher contrast/visibility)
+local SOLO_COLOR = Color3.fromHex("#bab7cc")
 
 -- Destroy Settings
 local destroyTarget = nil
@@ -182,17 +172,6 @@ local function findPlayerByFuzzy(str)
 end
 
 local function updateHitboxes(dt)
-	colorTimer = colorTimer + dt
-	local alpha = math.clamp(colorTimer / COLOR_CHANGE_INTERVAL, 0, 1)
-	
-	if colorTimer >= COLOR_CHANGE_INTERVAL then
-		colorTimer = 0
-		colorIndex = nextColorIndex
-		nextColorIndex = colorIndex % #colorList + 1
-	end
-	
-	local currentColor = colorList[colorIndex]:Lerp(colorList[nextColorIndex], alpha)
-
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
@@ -208,7 +187,7 @@ local function updateHitboxes(dt)
 			end
 			selectionBox.SurfaceTransparency = 0 -- 100% visible solid outline
 
-			-- 2. Inside box set to ~3% visible (Transparency = 0.97, matching 1-5% range)
+			-- 2. Inside box set to clearly visible high-contrast (Transparency = 0.2, meaning 80% opaque/visible)
 			local insideBox = hrp:FindFirstChild("KHitboxInside")
 			if not insideBox then
 				insideBox = Instance.new("BoxHandleAdornment")
@@ -227,8 +206,8 @@ local function updateHitboxes(dt)
 
 				insideBox.Adornee = hrp
 				insideBox.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
-				insideBox.Color3 = currentColor
-				insideBox.Transparency = 0.97 -- 3% visibility (1-5% requested range)
+				insideBox.Color3 = SOLO_COLOR
+				insideBox.Transparency = 0.2 -- Much higher contrast/visibility so you can clearly see it
 				
 				hrp.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
 				hrp.Transparency = 1
