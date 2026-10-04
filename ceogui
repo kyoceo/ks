@@ -34,8 +34,8 @@ local M1_ENABLED = false
 local PREDICT_ENABLED = false
 local PREDICT_FACTOR = 0.18
 
--- Fixed Solo Color Settings (#bab7cc with higher contrast/visibility)
-local SOLO_COLOR = Color3.fromHex("#bab7cc")
+-- Lighter, Vibrant Purple Color Settings (#b185db)
+local LIGHT_PURPLE_COLOR = Color3.fromHex("#b185db")
 
 -- Destroy Settings
 local destroyTarget = nil
@@ -187,7 +187,7 @@ local function updateHitboxes(dt)
 			end
 			selectionBox.SurfaceTransparency = 0 -- 100% visible solid outline
 
-			-- 2. Inside box set to clearly visible high-contrast (Transparency = 0.2, meaning 80% opaque/visible)
+			-- 2. Inside box set to vibrant lighter purple with clear visibility (Transparency = 0.2)
 			local insideBox = hrp:FindFirstChild("KHitboxInside")
 			if not insideBox then
 				insideBox = Instance.new("BoxHandleAdornment")
@@ -206,8 +206,8 @@ local function updateHitboxes(dt)
 
 				insideBox.Adornee = hrp
 				insideBox.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
-				insideBox.Color3 = SOLO_COLOR
-				insideBox.Transparency = 0.2 -- Much higher contrast/visibility so you can clearly see it
+				insideBox.Color3 = LIGHT_PURPLE_COLOR
+				insideBox.Transparency = 0.2 -- Clearly visible vibrant lighter purple
 				
 				hrp.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
 				hrp.Transparency = 1
