@@ -29,8 +29,7 @@ local customConfigs = {
     ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
     ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
-    ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
-    ["Slobinio10"] = { prefix = "Slob", title = "Slob System" },
+    ["Shutterz_0204"] = { prefix = "Akumu", title = "Akumu System" },
 }
 
 -- Fallback default name if username is not in the custom config above
@@ -53,8 +52,7 @@ local allowedUsers = {
     ["roblox_user_4058510147"] = true,
     ["aly_jxhn"] = true,
     ["thegoatdangerr"] = true,
-    ["mnmnbv555"] = true,
-    ["Slobinio10"] = true,
+    ["Shutterz_0204"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -97,7 +95,7 @@ chat(SCRIPT_TITLE .. " Script Loaded...")
 task.wait(1)
 chat("Made By Kyoshi")
 task.wait(1)
-chat("Script abuser hunter")
+chat("Report to kyoshi if used for abuse")
 task.wait(1)
 chat(SCRIPT_PREFIX .. " Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy, kill")
 
@@ -116,7 +114,7 @@ local MOVE_STEP = 0.3
 local HITBOX_SIZE = 100
 local BLOCK_ENABLED = false
 local PREDICT_ENABLED = false
-local PREDICT_FACTOR = 0.1
+local PREDICT_FACTOR = 0.4
 local loopKillTargetName = nil
 
 -- Auto Combat Settings
@@ -325,7 +323,7 @@ local function executeSingleVoidDrop()
         end
     end
 
-    local fallSpeed = 1000
+    local fallSpeed = 2000
     local connection
 
     connection = RunService.RenderStepped:Connect(function(deltaTime)
@@ -343,7 +341,7 @@ local function executeSingleVoidDrop()
         end
     end)
 
-    task.wait(0.8)
+    task.wait(0.6)
 end
 
 local function runVoidDropSequence()
@@ -366,9 +364,9 @@ local function performRecoverySequence(onCompleteCallback)
     task.wait(0.7)
     runVoidDropSequence()
 
-    MOVE_STEP = 100000
+    MOVE_STEP = 1000000
     task.spawn(function()
-        task.wait(5)
+        task.wait(4)
         MOVE_STEP = 0.3
     end)
 
