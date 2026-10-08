@@ -220,7 +220,7 @@ local function getPredictedPosition(hrp, targetHRP)
     end
     
     local distance = (hrp.Position - targetHRP.Position).Magnitude
-    if distance <= 4 then
+    if distance <= 10 then
         local velocity = Vector3.new(targetHRP.Velocity.X, 0, targetHRP.Velocity.Z)
         return targetHRP.Position + (velocity * PREDICT_FACTOR)
     else
@@ -439,7 +439,7 @@ local function runCustomAttackLoop(target)
             
             -- Wait for 3 seconds
             local elapsed = 0
-            while elapsed < 1.8 and scriptActive and attackLoopActive and attackTarget do
+            while elapsed < 0.8 and scriptActive and attackLoopActive and attackTarget do
                 task.wait(0.1)
                 elapsed = elapsed + 0.1
             end
