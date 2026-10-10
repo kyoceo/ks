@@ -33,6 +33,7 @@ local customConfigs = {
     ["Inori_luna"] = { prefix = "Luna", title = "Luna System" },
     ["Shutterz_0204"] = { prefix = "Akumu", title = "Akumu System" },
     ["pepetro290"] = { prefix = "HYP", title = "HYP System" },
+    ["caicedxo"] = { prefix = "Android", title = "Android System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -58,6 +59,7 @@ local allowedUsers = {
     ["Inori_luna"] = true,
     ["Shutterz_0204"] = true,
     ["pepetro290"] = true,
+    ["caicedxo"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -113,7 +115,7 @@ local scriptActive = true
 local FLOAT_HEIGHT = 0
 local MOVE_STEP = 1000000
 local HITBOX_SIZE = 100
-local BLOCK_ENABLED = true
+local BLOCK_ENABLED = false
 local PREDICT_ENABLED = true
 local PREDICT_FACTOR = 0.4
 local loopKillTargetName = nil
@@ -331,7 +333,7 @@ local function moveToVoidQuickly()
         end
     end)
 
-    task.wait(0.6)
+    task.wait(0.5)
 end
 
 --========================================================--
@@ -439,7 +441,7 @@ local function runCustomAttackLoop(target)
             
             -- Wait for 3 seconds
             local elapsed = 0
-            while elapsed < 0.8 and scriptActive and attackLoopActive and attackTarget do
+            while elapsed < 0.5 and scriptActive and attackLoopActive and attackTarget do
                 task.wait(0.1)
                 elapsed = elapsed + 0.1
             end
