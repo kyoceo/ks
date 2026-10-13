@@ -1,993 +1,1014 @@
--- Ceo Gui System - Fixed Reset Disappearing Bug
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local TeleportService = game:GetService("TeleportService")
-
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
-if playerGui:FindFirstChild("ExploitGui") then
-	playerGui.ExploitGui:Destroy()
-end
-
--- Instances
-local ExploitGui = Instance.new("ScreenGui")
-local MainGui = Instance.new("Frame")
-local MainGuiCormer = Instance.new("UICorner")
-local MainGuiBackground = Instance.new("ImageLabel")
-local MainGuiBackgroundCorner = Instance.new("UICorner")
-local GuiName = Instance.new("TextLabel")
-local GuiNameCorner = Instance.new("UICorner")
-local Options = Instance.new("Frame")
-local OptionCorner = Instance.new("UICorner")
-local MenuButton = Instance.new("TextButton")
-local MenuButtonCorner = Instance.new("UICorner")
-local OptionsButton = Instance.new("TextButton")
-local OptionsButtonCorner = Instance.new("UICorner")
-local AttackButton = Instance.new("TextButton")
-local AttackButtonCorner = Instance.new("UICorner")
-local CounterBotButton = Instance.new("TextButton")
-local CounterBotButtonCorner = Instance.new("UICorner")
-local CounterBot2Button = Instance.new("TextButton")
-local CounterBot2ButtonCorner = Instance.new("UICorner")
-local FunAttacksButton = Instance.new("TextButton")
-local FunAttacksButtonCorner = Instance.new("UICorner")
-local Attack2Button = Instance.new("TextButton")
-local AttackButtonCorner_2 = Instance.new("UICorner")
-local CloseButton = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner")
-local MenuFrame = Instance.new("Frame")
-local UICorner_2 = Instance.new("UICorner")
-local AutoM1 = Instance.new("TextLabel")
-local UICorner_3 = Instance.new("UICorner")
-local Onoff = Instance.new("TextButton")
-local AutoM2 = Instance.new("TextLabel")
-local UICorner_4 = Instance.new("UICorner")
-local Onoff_2 = Instance.new("TextButton")
-local AutoBlock = Instance.new("TextLabel")
-local UICorner_5 = Instance.new("UICorner")
-local Onoff_3 = Instance.new("TextButton")
-local Hitbox = Instance.new("TextLabel")
-local UICorner_6 = Instance.new("UICorner")
-local ColorInput = Instance.new("TextBox")
-local UICorner_7 = Instance.new("UICorner")
-local SizeInput = Instance.new("TextBox")
-local UICorner_8 = Instance.new("UICorner")
-local Onoff_4 = Instance.new("TextButton")
-local PlayerNameInput = Instance.new("TextBox")
-local UICorner_9 = Instance.new("UICorner")
-local Immune = Instance.new("TextButton")
-local UICorner_10 = Instance.new("UICorner")
-local Immune_2 = Instance.new("TextButton")
-local UICorner_11 = Instance.new("UICorner")
-local ResetButton = Instance.new("TextLabel")
-local UICorner_12 = Instance.new("UICorner")
-local Click = Instance.new("TextButton")
-local RejoinServer = Instance.new("TextLabel")
-local UICorner_13 = Instance.new("UICorner")
-local Click_2 = Instance.new("TextButton")
-local OptionsFrame = Instance.new("Frame")
-local UICorner_14 = Instance.new("UICorner")
-local FunAttacksFrame = Instance.new("Frame")
-local UICorner_15 = Instance.new("UICorner")
-local CounterBot2Frame = Instance.new("Frame")
-local UICorner_16 = Instance.new("UICorner")
-local CounterBotFrame = Instance.new("Frame")
-local UICorner_17 = Instance.new("UICorner")
-local AttackFrame = Instance.new("Frame")
-local UICorner_18 = Instance.new("UICorner")
-local Attack2Frame = Instance.new("Frame")
-local UICorner_19 = Instance.new("UICorner")
-local MiniGui = Instance.new("TextButton")
-local ImageLabel = Instance.new("ImageLabel")
-local UICorner_20 = Instance.new("UICorner")
-local UICorner_21 = Instance.new("UICorner")
-
--- Properties Setup
-ExploitGui.Name = "ExploitGui"
-ExploitGui.Parent = playerGui
-ExploitGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ExploitGui.ResetOnSpawn = false -- Keeps the UI active after resetting or respawning
-
-MainGui.Name = "Main Gui"
-MainGui.Parent = ExploitGui
-MainGui.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainGui.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MainGui.BorderSizePixel = 0
-MainGui.Position = UDim2.new(0.221339703, 176, 0.335427076, 41)
-MainGui.Size = UDim2.new(0, 500, 0, 297)
-
-MainGuiCormer.CornerRadius = UDim.new(0, 10)
-MainGuiCormer.Name = "Main Gui Cormer"
-MainGuiCormer.Parent = MainGui
-
-MainGuiBackground.Name = "Main Gui Background"
-MainGuiBackground.Parent = MainGui
-MainGuiBackground.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MainGuiBackground.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MainGuiBackground.BorderSizePixel = 0
-MainGuiBackground.Size = UDim2.new(0, 500, 0, 300)
-MainGuiBackground.Image = "rbxassetid://129661036792100"
-
-MainGuiBackgroundCorner.CornerRadius = UDim.new(0, 10)
-MainGuiBackgroundCorner.Name = "Main Gui Background Corner"
-MainGuiBackgroundCorner.Parent = MainGuiBackground
-
-GuiName.Name = "Gui Name"
-GuiName.Parent = MainGui
-GuiName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-GuiName.BackgroundTransparency = 1.000
-GuiName.BorderColor3 = Color3.fromRGB(0, 0, 0)
-GuiName.BorderSizePixel = 0
-GuiName.Size = UDim2.new(0, 121, 0, 38)
-GuiName.Font = Enum.Font.SourceSans
-GuiName.Text = "Ceo Gui System"
-GuiName.TextColor3 = Color3.fromRGB(0, 0, 0)
-GuiName.TextSize = 14.000
-
-GuiNameCorner.CornerRadius = UDim.new(0, 10)
-GuiNameCorner.Name = "Gui Name Corner"
-GuiNameCorner.Parent = GuiName
-
-Options.Name = "Options"
-Options.Parent = MainGui
-Options.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Options.BackgroundTransparency = 0.600
-Options.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Options.BorderSizePixel = 0
-Options.Position = UDim2.new(0, 0, 0.12666665, 0)
-Options.Size = UDim2.new(0, 121, 0, 262)
-
-OptionCorner.CornerRadius = UDim.new(0, 0)
-OptionCorner.Name = "Option Corner"
-OptionCorner.Parent = Options
-
-MenuButton.Name = "MenuButton"
-MenuButton.Parent = Options
-MenuButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MenuButton.BackgroundTransparency = 0.500
-MenuButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MenuButton.BorderSizePixel = 0
-MenuButton.Position = UDim2.new(0.107438013, 0, 0.854961812, 0)
-MenuButton.Size = UDim2.new(0, 95, 0, 25)
-MenuButton.Font = Enum.Font.SourceSans
-MenuButton.Text = "Menu"
-MenuButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-MenuButton.TextSize = 14.000
-MenuButtonCorner.Name = "Menu Button Corner"
-MenuButtonCorner.Parent = MenuButton
-
-OptionsButton.Name = "OptionsButton"
-OptionsButton.Parent = Options
-OptionsButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OptionsButton.BackgroundTransparency = 0.500
-OptionsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OptionsButton.BorderSizePixel = 0
-OptionsButton.Position = UDim2.new(0.107438013, 0, 0.729007661, 0)
-OptionsButton.Size = UDim2.new(0, 95, 0, 25)
-OptionsButton.Font = Enum.Font.SourceSans
-OptionsButton.Text = "Options"
-OptionsButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-OptionsButton.TextSize = 14.000
-OptionsButtonCorner.Name = "Options Button Corner"
-OptionsButtonCorner.Parent = OptionsButton
-
-AttackButton.Name = "AttackButton"
-AttackButton.Parent = Options
-AttackButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-AttackButton.BackgroundTransparency = 0.500
-AttackButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-AttackButton.BorderSizePixel = 0
-AttackButton.Position = UDim2.new(0.0909090936, 0, 0.0801526681, 0)
-AttackButton.Size = UDim2.new(0, 95, 0, 25)
-AttackButton.Font = Enum.Font.SourceSans
-AttackButton.Text = "Attack"
-AttackButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-AttackButton.TextSize = 14.000
-AttackButtonCorner.Name = "Attack Button Corner"
-AttackButtonCorner.Parent = AttackButton
-
-CounterBotButton.Name = "CounterBotButton"
-CounterBotButton.Parent = Options
-CounterBotButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CounterBotButton.BackgroundTransparency = 0.500
-CounterBotButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CounterBotButton.BorderSizePixel = 0
-CounterBotButton.Position = UDim2.new(0.107438013, 0, 0.339694649, 0)
-CounterBotButton.Size = UDim2.new(0, 95, 0, 25)
-CounterBotButton.Font = Enum.Font.SourceSans
-CounterBotButton.Text = "CounterBot"
-CounterBotButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-CounterBotButton.TextSize = 14.000
-CounterBotButtonCorner.Name = "Counter Bot Button Corner"
-CounterBotButtonCorner.Parent = CounterBotButton
-
-CounterBot2Button.Name = "CounterBot2Button"
-CounterBot2Button.Parent = Options
-CounterBot2Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CounterBot2Button.BackgroundTransparency = 0.500
-CounterBot2Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CounterBot2Button.BorderSizePixel = 0
-CounterBot2Button.Position = UDim2.new(0.10700018, 0, 0.476335824, 0)
-CounterBot2Button.Size = UDim2.new(0, 95, 0, 25)
-CounterBot2Button.Font = Enum.Font.SourceSans
-CounterBot2Button.Text = "CounterBot 2"
-CounterBot2Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-CounterBot2Button.TextSize = 14.000
-CounterBot2ButtonCorner.Name = "Counter Bot2 Button Corner"
-CounterBot2ButtonCorner.Parent = CounterBot2Button
-
-FunAttacksButton.Name = "FunAttacksButton"
-FunAttacksButton.Parent = Options
-FunAttacksButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-FunAttacksButton.BackgroundTransparency = 0.500
-FunAttacksButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-FunAttacksButton.BorderSizePixel = 0
-FunAttacksButton.Position = UDim2.new(0.107438013, 0, 0.603053451, 0)
-FunAttacksButton.Size = UDim2.new(0, 95, 0, 25)
-FunAttacksButton.Font = Enum.Font.SourceSans
-FunAttacksButton.Text = "FunAttacks"
-FunAttacksButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-FunAttacksButton.TextSize = 14.000
-FunAttacksButtonCorner.Name = "Fun Attacks Button Corner"
-FunAttacksButtonCorner.Parent = FunAttacksButton
-
-Attack2Button.Name = "Attack2Button"
-Attack2Button.Parent = Options
-Attack2Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Attack2Button.BackgroundTransparency = 0.500
-Attack2Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Attack2Button.BorderSizePixel = 0
-Attack2Button.Position = UDim2.new(0.0990862921, 0, 0.210228607, 0)
-Attack2Button.Size = UDim2.new(0, 95, 0, 25)
-Attack2Button.Font = Enum.Font.SourceSans
-Attack2Button.Text = "Attack2"
-Attack2Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-Attack2Button.TextSize = 14.000
-AttackButtonCorner_2.Name = "Attack Button Corner"
-AttackButtonCorner_2.Parent = Attack2Button
-
-CloseButton.Name = "Close Button"
-CloseButton.Parent = MainGui
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.BackgroundTransparency = 1.000
-CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CloseButton.BorderSizePixel = 0
-CloseButton.Position = UDim2.new(0.920000017, 0, 0, 0)
-CloseButton.Size = UDim2.new(0, 40, 0, 38)
-CloseButton.Font = Enum.Font.SourceSans
-CloseButton.Text = "❌"
-CloseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-CloseButton.TextSize = 14.000
-UICorner.CornerRadius = UDim.new(0, 0)
-UICorner.Parent = CloseButton
-
-MenuFrame.Name = "MenuFrame"
-MenuFrame.Parent = MainGui
-MenuFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MenuFrame.BackgroundTransparency = 0.500
-MenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MenuFrame.BorderSizePixel = 0
-MenuFrame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-MenuFrame.Size = UDim2.new(0, 372, 0, 261)
-UICorner_2.CornerRadius = UDim.new(0, 0)
-UICorner_2.Parent = MenuFrame
-
-AutoM1.Name = "AutoM1"
-AutoM1.Parent = MenuFrame
-AutoM1.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-AutoM1.BackgroundTransparency = 0.500
-AutoM1.BorderColor3 = Color3.fromRGB(0, 0, 0)
-AutoM1.BorderSizePixel = 0
-AutoM1.Position = UDim2.new(0.0456989259, 0, 0.0344827585, 0)
-AutoM1.Size = UDim2.new(0, 262, 0, 19)
-AutoM1.Font = Enum.Font.SourceSans
-AutoM1.Text = "Auto M1"
-AutoM1.TextColor3 = Color3.fromRGB(0, 0, 0)
-AutoM1.TextSize = 14.000
-UICorner_3.Parent = AutoM1
-
-Onoff.Name = "On/off"
-Onoff.Parent = AutoM1
-Onoff.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Onoff.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Onoff.BorderSizePixel = 0
-Onoff.Position = UDim2.new(1.07576191, 0, 0, 0)
-Onoff.Size = UDim2.new(0, 56, 0, 19)
-Onoff.Font = Enum.Font.SourceSans
-Onoff.Text = "Start"
-Onoff.TextColor3 = Color3.fromRGB(0, 0, 0)
-Onoff.TextSize = 14.000
-
-AutoM2.Name = "AutoM2"
-AutoM2.Parent = MenuFrame
-AutoM2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-AutoM2.BackgroundTransparency = 0.500
-AutoM2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-AutoM2.BorderSizePixel = 0
-AutoM2.Position = UDim2.new(0.0456989259, 0, 0.134099618, 0)
-AutoM2.Size = UDim2.new(0, 262, 0, 20)
-AutoM2.Font = Enum.Font.SourceSans
-AutoM2.Text = "Auto M2"
-AutoM2.TextColor3 = Color3.fromRGB(0, 0, 0)
-AutoM2.TextSize = 14.000
-UICorner_4.Parent = AutoM2
-
-Onoff_2.Name = "On/off"
-Onoff_2.Parent = AutoM2
-Onoff_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Onoff_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_2.BorderSizePixel = 0
-Onoff_2.Position = UDim2.new(1.07576191, 0, 0, 0)
-Onoff_2.Size = UDim2.new(0, 56, 0, 19)
-Onoff_2.AutoButtonColor = false
-Onoff_2.Font = Enum.Font.SourceSans
-Onoff_2.Text = "Start"
-Onoff_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_2.TextSize = 14.000
-
-AutoBlock.Name = "AutoBlock"
-AutoBlock.Parent = MenuFrame
-AutoBlock.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-AutoBlock.BackgroundTransparency = 0.500
-AutoBlock.BorderColor3 = Color3.fromRGB(0, 0, 0)
-AutoBlock.BorderSizePixel = 0
-AutoBlock.Position = UDim2.new(0.0460000001, 0, 0.239999995, 0)
-AutoBlock.Size = UDim2.new(0, 262, 0, 19)
-AutoBlock.Font = Enum.Font.SourceSans
-AutoBlock.Text = "Auto Block"
-AutoBlock.TextColor3 = Color3.fromRGB(0, 0, 0)
-AutoBlock.TextSize = 14.000
-UICorner_5.Parent = AutoBlock
-
-Onoff_3.Name = "On/off"
-Onoff_3.Parent = AutoBlock
-Onoff_3.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Onoff_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_3.BorderSizePixel = 0
-Onoff_3.Position = UDim2.new(1.07576191, 0, 0, 0)
-Onoff_3.Size = UDim2.new(0, 56, 0, 19)
-Onoff_3.Font = Enum.Font.SourceSans
-Onoff_3.Text = "Start"
-Onoff_3.TextColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_3.TextSize = 14.000
-
-Hitbox.Name = "Hitbox"
-Hitbox.Parent = MenuFrame
-Hitbox.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Hitbox.BackgroundTransparency = 0.500
-Hitbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Hitbox.BorderSizePixel = 0
-Hitbox.Position = UDim2.new(0.0433118269, 0, 0.347279757, 0)
-Hitbox.Size = UDim2.new(0, 263, 0, 19)
-Hitbox.Font = Enum.Font.SourceSans
-Hitbox.Text = "Hitbox"
-Hitbox.TextColor3 = Color3.fromRGB(0, 0, 0)
-Hitbox.TextSize = 14.000
-UICorner_6.Parent = Hitbox
-
-ColorInput.Name = "ColorInput"
-ColorInput.Parent = Hitbox
-ColorInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-ColorInput.BackgroundTransparency = 0.500
-ColorInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ColorInput.BorderSizePixel = 0
-ColorInput.Position = UDim2.new(0.00148665858, 0, 1.56748557, 0)
-ColorInput.Size = UDim2.new(0, 125, 0, 19)
-ColorInput.Font = Enum.Font.SourceSans
-ColorInput.Text = "FF0000"
-ColorInput.PlaceholderText = "Color #"
-ColorInput.TextColor3 = Color3.fromRGB(0, 0, 0)
-ColorInput.TextSize = 14.000
-UICorner_7.Parent = ColorInput
-
-SizeInput.Name = "SizeInput"
-SizeInput.Parent = Hitbox
-SizeInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-SizeInput.BackgroundTransparency = 0.500
-SizeInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
-SizeInput.BorderSizePixel = 0
-SizeInput.Position = UDim2.new(0.522399187, 0, 1.56748557, 0)
-SizeInput.Size = UDim2.new(0, 125, 0, 19)
-SizeInput.Font = Enum.Font.SourceSans
-SizeInput.Text = "5"
-SizeInput.PlaceholderText = "Size"
-SizeInput.TextColor3 = Color3.fromRGB(0, 0, 0)
-SizeInput.TextSize = 14.000
-UICorner_8.Parent = SizeInput
-
-Onoff_4.Name = "On/off"
-Onoff_4.Parent = SizeInput
-Onoff_4.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Onoff_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_4.BorderSizePixel = 0
-Onoff_4.Position = UDim2.new(1.1557622, 0, -1.57894742, 0)
-Onoff_4.Size = UDim2.new(0, 56, 0, 19)
-Onoff_4.Font = Enum.Font.SourceSans
-Onoff_4.Text = "Start"
-Onoff_4.TextColor3 = Color3.fromRGB(0, 0, 0)
-Onoff_4.TextSize = 14.000
-
-PlayerNameInput.Name = "PlayerNameInput"
-PlayerNameInput.Parent = Hitbox
-PlayerNameInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-PlayerNameInput.BackgroundTransparency = 0.500
-PlayerNameInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
-PlayerNameInput.BorderSizePixel = 0
-PlayerNameInput.Position = UDim2.new(0.00380204921, 0, 3.04116988, 0)
-PlayerNameInput.Size = UDim2.new(0, 260, 0, 18)
-PlayerNameInput.Font = Enum.Font.SourceSans
-PlayerNameInput.Text = ""
-PlayerNameInput.PlaceholderText = "Immune Player Name"
-PlayerNameInput.TextColor3 = Color3.fromRGB(0, 0, 0)
-PlayerNameInput.TextSize = 14.000
-UICorner_9.Parent = PlayerNameInput
-
-Immune.Name = "Immune"
-Immune.Parent = PlayerNameInput
-Immune.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Immune.BackgroundTransparency = 0.500
-Immune.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Immune.BorderSizePixel = 0
-Immune.Position = UDim2.new(-0.00384615385, 0, 1.33333337, 0)
-Immune.Size = UDim2.new(0, 125, 0, 18)
-Immune.Font = Enum.Font.SourceSans
-Immune.Text = "Immune"
-Immune.TextColor3 = Color3.fromRGB(0, 0, 0)
-Immune.TextSize = 14.000
-UICorner_10.Parent = Immune
-
-Immune_2.Name = "Immune"
-Immune_2.Parent = PlayerNameInput
-Immune_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Immune_2.BackgroundTransparency = 0.500
-Immune_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Immune_2.BorderSizePixel = 0
-Immune_2.Position = UDim2.new(0.524581194, 0, 1.33333337, 0)
-Immune_2.Size = UDim2.new(0, 123, 0, 18)
-Immune_2.Font = Enum.Font.SourceSans
-Immune_2.Text = "Unimmune"
-Immune_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Immune_2.TextSize = 14.000
-UICorner_11.Parent = Immune_2
-
-ResetButton.Name = "Reset Button"
-ResetButton.Parent = MenuFrame
-ResetButton.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-ResetButton.BackgroundTransparency = 0.500
-ResetButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ResetButton.BorderSizePixel = 0
-ResetButton.Position = UDim2.new(0.0379999988, 0, 0.758000016, 0)
-ResetButton.Size = UDim2.new(0, 262, 0, 19)
-ResetButton.Font = Enum.Font.SourceSans
-ResetButton.Text = "Reset"
-ResetButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-ResetButton.TextSize = 14.000
-UICorner_12.Parent = ResetButton
-
-Click.Name = "Click"
-Click.Parent = ResetButton
-Click.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Click.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Click.BorderSizePixel = 0
-Click.Position = UDim2.new(1.08339548, 0, 0, 0)
-Click.Size = UDim2.new(0, 56, 0, 19)
-Click.Font = Enum.Font.SourceSans
-Click.Text = "Click"
-Click.TextColor3 = Color3.fromRGB(0, 0, 0)
-Click.TextSize = 14.000
-
-RejoinServer.Name = "RejoinServer"
-RejoinServer.Parent = MenuFrame
-RejoinServer.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-RejoinServer.BackgroundTransparency = 0.500
-RejoinServer.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RejoinServer.BorderSizePixel = 0
-RejoinServer.Position = UDim2.new(0.0379999615, 0, 0.865900397, 0)
-RejoinServer.Size = UDim2.new(0, 261, 0, 19)
-RejoinServer.Font = Enum.Font.SourceSans
-RejoinServer.Text = "Rejoin Same Server"
-RejoinServer.TextColor3 = Color3.fromRGB(0, 0, 0)
-RejoinServer.TextSize = 14.000
-UICorner_13.Parent = RejoinServer
-
-Click_2.Name = "Click"
-Click_2.Parent = RejoinServer
-Click_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Click_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Click_2.BorderSizePixel = 0
-Click_2.Position = UDim2.new(1.08429122, 0, 0, 0)
-Click_2.Size = UDim2.new(0, 56, 0, 19)
-Click_2.Font = Enum.Font.SourceSans
-Click_2.Text = "Click"
-Click_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Click_2.TextSize = 14.000
-
-OptionsFrame.Name = "OptionsFrame"
-OptionsFrame.Parent = MainGui
-OptionsFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OptionsFrame.BackgroundTransparency = 0.500
-OptionsFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OptionsFrame.BorderSizePixel = 0
-OptionsFrame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-OptionsFrame.Size = UDim2.new(0, 372, 0, 261)
-OptionsFrame.Visible = false
-UICorner_14.CornerRadius = UDim.new(0, 0)
-UICorner_14.Parent = OptionsFrame
-
-FunAttacksFrame.Name = "FunAttacksFrame"
-FunAttacksFrame.Parent = MainGui
-FunAttacksFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-FunAttacksFrame.BackgroundTransparency = 0.500
-FunAttacksFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-FunAttacksFrame.BorderSizePixel = 0
-FunAttacksFrame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-FunAttacksFrame.Size = UDim2.new(0, 372, 0, 261)
-FunAttacksFrame.Visible = false
-UICorner_15.CornerRadius = UDim.new(0, 0)
-UICorner_15.Parent = FunAttacksFrame
-
-CounterBot2Frame.Name = "CounterBot2Frame"
-CounterBot2Frame.Parent = MainGui
-CounterBot2Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CounterBot2Frame.BackgroundTransparency = 0.500
-CounterBot2Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CounterBot2Frame.BorderSizePixel = 0
-CounterBot2Frame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-CounterBot2Frame.Size = UDim2.new(0, 372, 0, 261)
-CounterBot2Frame.Visible = false
-UICorner_16.CornerRadius = UDim.new(0, 0)
-UICorner_16.Parent = CounterBot2Frame
-
-CounterBotFrame.Name = "CounterBotFrame"
-CounterBotFrame.Parent = MainGui
-CounterBotFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CounterBotFrame.BackgroundTransparency = 0.500
-CounterBotFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CounterBotFrame.BorderSizePixel = 0
-CounterBotFrame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-CounterBotFrame.Size = UDim2.new(0, 372, 0, 261)
-CounterBotFrame.Visible = false
-UICorner_17.CornerRadius = UDim.new(0, 0)
-UICorner_17.Parent = CounterBotFrame
-
-AttackFrame.Name = "AttackFrame"
-AttackFrame.Parent = MainGui
-AttackFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-AttackFrame.BackgroundTransparency = 0.500
-AttackFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-AttackFrame.BorderSizePixel = 0
-AttackFrame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-AttackFrame.Size = UDim2.new(0, 372, 0, 261)
-AttackFrame.Visible = false
-UICorner_18.CornerRadius = UDim.new(0, 0)
-UICorner_18.Parent = AttackFrame
-
-Attack2Frame.Name = "Attack2Frame"
-Attack2Frame.Parent = MainGui
-Attack2Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Attack2Frame.BackgroundTransparency = 0.500
-Attack2Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Attack2Frame.BorderSizePixel = 0
-Attack2Frame.Position = UDim2.new(0.256000012, 0, 0.127945825, 0)
-Attack2Frame.Size = UDim2.new(0, 372, 0, 261)
-Attack2Frame.Visible = false
-UICorner_19.CornerRadius = UDim.new(0, 0)
-UICorner_19.Parent = Attack2Frame
-
-MiniGui.Name = "Mini Gui"
-MiniGui.Parent = ExploitGui
-MiniGui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MiniGui.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MiniGui.BorderSizePixel = 0
-MiniGui.Position = UDim2.new(0.625651062, 6, 0.302648157, -3)
-MiniGui.Size = UDim2.new(0, 60, 0, 60)
-MiniGui.Visible = false
-MiniGui.Font = Enum.Font.SourceSans
-MiniGui.Text = "Reopen"
-MiniGui.TextColor3 = Color3.fromRGB(0, 0, 0)
-MiniGui.TextSize = 14.000
-
-ImageLabel.Parent = MiniGui
-ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ImageLabel.BorderSizePixel = 0
-ImageLabel.Position = UDim2.new(-0.00500081386, 0, -5.08626329e-07, 0)
-ImageLabel.Size = UDim2.new(0, 60, 0, 60)
-ImageLabel.Image = "rbxassetid://129661036792100"
-UICorner_20.CornerRadius = UDim.new(1, 0)
-UICorner_20.Parent = ImageLabel
-UICorner_21.CornerRadius = UDim.new(1, 0)
-UICorner_21.Parent = MiniGui
-
--- Functional Logic Implementation
-local mainScale = MainGui:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", MainGui)
-local miniScale = MiniGui:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", MiniGui)
-
-local shrinkInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
-local expandInfo = TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-
-CloseButton.MouseButton1Click:Connect(function()
-	local btnPos = CloseButton.AbsolutePosition
-	local btnSize = CloseButton.AbsoluteSize
-
-	MiniGui.Position = UDim2.new(0, btnPos.X + btnSize.X/2, 0, btnPos.Y + btnSize.Y/2)
-	MiniGui.AnchorPoint = Vector2.new(0.5, 0.5)
-
-	mainScale.Scale = 1
-	local shrink = TweenService:Create(mainScale, shrinkInfo, {Scale = 0})
-	shrink:Play()
-	shrink.Completed:Wait()
-
-	MainGui.Visible = false
-	mainScale.Scale = 1
-
-	MiniGui.Visible = true
-	miniScale.Scale = 0
-	local expandMini = TweenService:Create(miniScale, expandInfo, {Scale = 1})
-	expandMini:Play()
-end)
-
--- Auto M1 Logic
-local isM1Running = false
-local CombatRemote = ReplicatedStorage:FindFirstChild("CombatRemote")
-
-Onoff.MouseButton1Click:Connect(function()
-	isM1Running = not isM1Running
-	if isM1Running then
-		Onoff.Text = "Stop"
-		Onoff.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-		task.spawn(function()
-			while isM1Running do
-				if CombatRemote then
-					CombatRemote:FireServer("M1")
-				end
-				task.wait(0.01)
-			end
-		end)
-	else
-		Onoff.Text = "Start"
-		Onoff.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-	end
-end)
-
--- Auto M2 Logic
-local isM2Running = false
-
-Onoff_2.MouseButton1Click:Connect(function()
-	isM2Running = not isM2Running
-	if isM2Running then
-		Onoff_2.Text = "Stop"
-		Onoff_2.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-		task.spawn(function()
-			while isM2Running do
-				if CombatRemote then
-					CombatRemote:FireServer("M2")
-				end
-				task.wait(0.01)
-			end
-		end)
-	else
-		Onoff_2.Text = "Start"
-		Onoff_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-	end
-end)
-
--- Auto Block Logic
-local isBlockRunning = false
-
-Onoff_3.MouseButton1Click:Connect(function()
-	isBlockRunning = not isBlockRunning
-	if isBlockRunning then
-		Onoff_3.Text = "Stop"
-		Onoff_3.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-		task.spawn(function()
-			while isBlockRunning do
-				VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
-				task.wait(0)
-			end
-			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
-		end)
-	else
-		Onoff_3.Text = "Start"
-		Onoff_3.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-	end
-end)
-
--- Hitbox & Immunity Logic
-local isMainRunning = false
-local customPlayerSizes = {}
-local affectedCharacters = {}
-local playerConnections = {}
-local playerAddedConn = nil
-
-local function hexToColor3(hex)
-	hex = hex:gsub("#", "")
-	if #hex ~= 6 then 
-		return Color3.fromRGB(255, 0, 0)
-	end
-	local r = tonumber(hex:sub(1, 2), 16) or 255
-	local g = tonumber(hex:sub(3, 4), 16) or 255
-	local b = tonumber(hex:sub(5, 6), 16) or 255
-	return Color3.fromRGB(r, g, b)
-end
-
-local function applyHitboxToCharacter(character, size, outlineColor)
-	local rootPart = character:FindFirstChild("HumanoidRootPart")
-	if not rootPart or character == player.Character then return end
-
-	if not affectedCharacters[character] then
-		affectedCharacters[character] = {
-			RootPart = rootPart,
-			OriginalSize = rootPart.Size,
-			OriginalCanCollide = rootPart.CanCollide,
-		}
-	end
-
-	rootPart.Size = Vector3.new(size, size, size)
-	rootPart.CanCollide = false
-	rootPart.Transparency = 1
-
-	local selectionBox = rootPart:FindFirstChild("HitboxOutline")
-	if not selectionBox then
-		selectionBox = Instance.new("SelectionBox")
-		selectionBox.Name = "HitboxOutline"
-		selectionBox.LineThickness = 0.05
-		selectionBox.Adornee = rootPart
-		selectionBox.Parent = rootPart
-	end
-	selectionBox.Color3 = outlineColor
-end
-
-local function resetCharacterHitbox(character)
-	local data = affectedCharacters[character]
-	if data and data.RootPart and data.RootPart.Parent then
-		data.RootPart.Size = data.OriginalSize
-		data.RootPart.CanCollide = data.OriginalCanCollide
-		local outline = data.RootPart:FindFirstChild("HitboxOutline")
-		if outline then outline:Destroy() end
-		affectedCharacters[character] = nil
-	end
-end
-
-local function updateHitboxes()
-	local mainSize = tonumber(SizeInput.Text) or 15
-	local mainColor = hexToColor3(ColorInput.Text)
-
-	for _, p in ipairs(Players:GetPlayers()) do
-		if p ~= player and p.Character then
-			if customPlayerSizes[p] then
-				local customSize = customPlayerSizes[p]
-				if customSize <= 2 then
-					resetCharacterHitbox(p.Character)
-				else
-					applyHitboxToCharacter(p.Character, customSize, Color3.fromRGB(0, 255, 255))
-				end
-			elseif isMainRunning then
-				applyHitboxToCharacter(p.Character, mainSize, mainColor)
-			else
-				resetCharacterHitbox(p.Character)
-			end
-		end
-	end
-end
-
-local function setupConnections()
-	if playerAddedConn then return end
-	playerAddedConn = Players.PlayerAdded:Connect(function(p)
-		if p ~= player then
-			playerConnections[p] = p.CharacterAdded:Connect(function(char)
-				task.wait(0.5)
-				updateHitboxes()
-			end)
-		end
-	end)
-	for _, p in ipairs(Players:GetPlayers()) do
-		if p ~= player and not playerConnections[p] then
-			playerConnections[p] = p.CharacterAdded:Connect(function(char)
-				task.wait(0.5)
-				updateHitboxes()
-			end)
-		end
-	end
-end
-
-Onoff_4.MouseButton1Click:Connect(function()
-	isMainRunning = not isMainRunning
-	if isMainRunning then
-		Onoff_4.Text = "Stop"
-		Onoff_4.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-		setupConnections()
-		updateHitboxes()
-	else
-		Onoff_4.Text = "Start"
-		Onoff_4.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-		updateHitboxes()
-	end
-end)
-
-local function findMatchingPlayer(searchTerm)
-	if searchTerm == "" then return nil end
-	searchTerm = searchTerm:lower()
-	for _, p in ipairs(Players:GetPlayers()) do
-		if p ~= player then
-			if p.Name:lower():find(searchTerm, 1, true) or p.DisplayName:lower():find(searchTerm, 1, true) then
-				return p
-			end
-		end
-	end
-	return nil
-end
-
-Immune.MouseButton1Click:Connect(function()
-	local matchedPlayer = findMatchingPlayer(PlayerNameInput.Text)
-	if not matchedPlayer then
-		warn("No matching player found!")
-		return
-	end
-	customPlayerSizes[matchedPlayer] = 2
-	print(matchedPlayer.Name .. " is now immune.")
-	updateHitboxes()
-end)
-
-Immune_2.MouseButton1Click:Connect(function()
-	local matchedPlayer = findMatchingPlayer(PlayerNameInput.Text)
-	if not matchedPlayer then
-		warn("No matching player found!")
-		return
-	end
-	customPlayerSizes[matchedPlayer] = nil
-	print(matchedPlayer.Name .. " un-immunized.")
-	if matchedPlayer.Character then
-		resetCharacterHitbox(matchedPlayer.Character)
-	end
-	updateHitboxes()
-end)
-
--- Reset Character Button Logic
-Click.MouseButton1Click:Connect(function()
-	local character = player.Character
-	if character then
-		local humanoid = character:FindFirstChildOfClass("Humanoid")
-		if humanoid then
-			humanoid.Health = 0
-		else
-			character:BreakJoints()
-		end
-	end
-end)
-
--- Rejoin Same Server Button Logic
-Click_2.MouseButton1Click:Connect(function()
-	TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
-end)
-
--- Frame Switching Logic
-local frames = {
-	Attack = AttackFrame,
-	Attack2 = Attack2Frame,
-	CounterBot = CounterBotFrame,
-	CounterBot2 = CounterBot2Frame,
-	FunAttacks = FunAttacksFrame,
-	Options = OptionsFrame,
-	Menu = MenuFrame,
-}
-
-local buttons = {
-	Attack = AttackButton,
-	Attack2 = Attack2Button,
-	CounterBot = CounterBotButton,
-	CounterBot2 = CounterBot2Button,
-	FunAttacks = FunAttacksButton,
-	Options = OptionsButton,
-	Menu = MenuButton,
-}
-
-local function hideAllFrames()
-	for _, frame in pairs(frames) do
-		frame.Visible = false
-	end
-end
-
-hideAllFrames()
-MenuFrame.Visible = true
-
-for name, button in pairs(buttons) do
-	button.MouseButton1Click:Connect(function()
-		hideAllFrames()
-		frames[name].Visible = true
-	end)
-end
-
--- Draggable Function for Main Gui
-local function makeDraggable(guiObject)
-	local dragging, dragInput, dragStart, startPos
+-- Ceo Gui System - Ultra-Safe & Error-Proof Script
+local success, errorMessage = pcall(function()
+	print("[CeoGui]: Starting script execution...")
 	
-	guiObject.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = guiObject.Position
-			
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
+	local Players = game:GetService("Players")
+	local TweenService = game:GetService("TweenService")
+	local UserInputService = game:GetService("UserInputService")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local TeleportService = game:GetService("TeleportService")
 	
-	guiObject.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
+	-- Safe VirtualInputManager check (prevents crashes on executors that block it)
+	local VirtualInputManager = nil
+	pcall(function()
+		VirtualInputManager = game:GetService("VirtualInputManager")
 	end)
-	
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			local delta = input.Position - dragStart
-			guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-	end)
-end
 
-makeDraggable(MainGui)
+	local player = Players.LocalPlayer
+	if not player then
+		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+		player = Players.LocalPlayer
+	end
 
--- Draggable & Click Logic for Mini Gui
-local function makeDraggableWithClick(guiObject, onClick)
-	local dragging = false
-	local dragInput = nil
-	local dragStart = nil
-	local startPos = nil
-	local startAbsolutePos = Vector2.new(0, 0)
-	
-	guiObject.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = guiObject.Position
-			startAbsolutePos = guiObject.AbsolutePosition
-			
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					if dragging then
-						dragging = false
-						if (guiObject.AbsolutePosition - startAbsolutePos).Magnitude < 6 then
-							if onClick then onClick() end
-						end
-					end
-				end
-			end)
-		end
-	end)
-	
-	guiObject.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-	
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			local delta = input.Position - dragStart
-			guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-	end)
-end
+	local playerGui = player:WaitForChild("PlayerGui", 10) or player:FindFirstChild("PlayerGui")
+	if not playerGui then
+		error("PlayerGui could not be found!")
+	end
 
-makeDraggableWithClick(MiniGui, function()
+	-- Remove old instance if already running
+	if playerGui:FindFirstChild("ExploitGui") then
+		playerGui.ExploitGui:Destroy()
+	end
+
+	print("[CeoGui]: Creating UI instances...")
+
+	-- Instances Setup
+	local ExploitGui = Instance.new("ScreenGui")
+	local MainGui = Instance.new("Frame")
+	local MainGuiCormer = Instance.new("UICorner")
+	local MainGuiBackground = Instance.new("ImageLabel")
+	local MainGuiBackgroundCorner = Instance.new("UICorner")
+	local GuiName = Instance.new("TextLabel")
+	local GuiNameCorner = Instance.new("UICorner")
+	local Options = Instance.new("Frame")
+	local OptionCorner = Instance.new("UICorner")
+	local MenuButton = Instance.new("TextButton")
+	local MenuButtonCorner = Instance.new("UICorner")
+	local OptionsButton = Instance.new("TextButton")
+	local OptionsButtonCorner = Instance.new("UICorner")
+	local AttackButton = Instance.new("TextButton")
+	local AttackButtonCorner = Instance.new("UICorner")
+	local CounterBotButton = Instance.new("TextButton")
+	local CounterBotButtonCorner = Instance.new("UICorner")
+	local CounterBot2Button = Instance.new("TextButton")
+	local CounterBot2ButtonCorner = Instance.new("UICorner")
+	local FunAttacksButton = Instance.new("TextButton")
+	local FunAttacksButtonCorner = Instance.new("UICorner")
+	local Attack2Button = Instance.new("TextButton")
+	local AttackButtonCorner_2 = Instance.new("UICorner")
+	local CloseButton = Instance.new("TextButton")
+	local UICorner = Instance.new("UICorner")
+	local MenuFrame = Instance.new("Frame")
+	local UICorner_2 = Instance.new("UICorner")
+	local AutoM1 = Instance.new("TextLabel")
+	local UICorner_3 = Instance.new("UICorner")
+	local Onoff = Instance.new("TextButton")
+	local AutoM2 = Instance.new("TextLabel")
+	local UICorner_4 = Instance.new("UICorner")
+	local Onoff_2 = Instance.new("TextButton")
+	local AutoBlock = Instance.new("TextLabel")
+	local UICorner_5 = Instance.new("UICorner")
+	local Onoff_3 = Instance.new("TextButton")
+	local Hitbox = Instance.new("TextLabel")
+	local UICorner_6 = Instance.new("UICorner")
+	local ColorInput = Instance.new("TextBox")
+	local UICorner_7 = Instance.new("UICorner")
+	local SizeInput = Instance.new("TextBox")
+	local UICorner_8 = Instance.new("UICorner")
+	local Onoff_4 = Instance.new("TextButton")
+	local PlayerNameInput = Instance.new("TextBox")
+	local UICorner_9 = Instance.new("UICorner")
+	local Immune = Instance.new("TextButton")
+	local UICorner_10 = Instance.new("UICorner")
+	local Immune_2 = Instance.new("TextButton")
+	local UICorner_11 = Instance.new("UICorner")
+	local OptionsFrame = Instance.new("Frame")
+	local UICorner_12 = Instance.new("UICorner")
+	local RejoinServer = Instance.new("TextLabel")
+	local UICorner_13 = Instance.new("UICorner")
+	local Click = Instance.new("TextButton")
+	local ResetButton = Instance.new("TextLabel")
+	local UICorner_14 = Instance.new("UICorner")
+	local Click_2 = Instance.new("TextButton")
+	local FunAttacksFrame = Instance.new("Frame")
+	local UICorner_15 = Instance.new("UICorner")
+	local CounterBot2Frame = Instance.new("Frame")
+	local UICorner_16 = Instance.new("UICorner")
+	local CounterBotFrame = Instance.new("Frame")
+	local UICorner_17 = Instance.new("UICorner")
+	local AttackFrame = Instance.new("Frame")
+	local UICorner_18 = Instance.new("UICorner")
+	local Attack2Frame = Instance.new("Frame")
+	local UICorner_19 = Instance.new("UICorner")
+	local MiniGui = Instance.new("TextButton")
+	local ImageLabel = Instance.new("ImageLabel")
+	local UICorner_20 = Instance.new("UICorner")
+	local UICorner_21 = Instance.new("UICorner")
+
+	-- Properties Setup
+	ExploitGui.Name = "ExploitGui"
+	ExploitGui.Parent = playerGui
+	ExploitGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	ExploitGui.ResetOnSpawn = false
+	ExploitGui.IgnoreGuiInset = true
+
+	MainGui.Name = "Main Gui"
+	MainGui.Parent = ExploitGui
+	MainGui.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	MainGui.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	MainGui.BorderSizePixel = 0
 	MainGui.AnchorPoint = Vector2.new(0.5, 0.5)
 	MainGui.Position = UDim2.new(0.5, 0, 0.5, 0)
-
-	MiniGui.Visible = false
+	MainGui.Size = UDim2.new(0, 415, 0, 241)
 	MainGui.Visible = true
-	mainScale.Scale = 0
 
-	local expandMain = TweenService:Create(mainScale, expandInfo, {Scale = 1})
-	expandMain:Play()
+	MainGuiCormer.CornerRadius = UDim.new(0, 10)
+	MainGuiCormer.Parent = MainGui
+
+	MainGuiBackground.Name = "Main Gui Background"
+	MainGuiBackground.Parent = MainGui
+	MainGuiBackground.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MainGuiBackground.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	MainGuiBackground.BorderSizePixel = 0
+	MainGuiBackground.Size = UDim2.new(0, 415, 0, 241)
+	MainGuiBackground.Image = "rbxassetid://129661036792100"
+
+	MainGuiBackgroundCorner.CornerRadius = UDim.new(0, 10)
+	MainGuiBackgroundCorner.Parent = MainGuiBackground
+
+	GuiName.Name = "Gui Name"
+	GuiName.Parent = MainGui
+	GuiName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	GuiName.BackgroundTransparency = 1.000
+	GuiName.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	GuiName.BorderSizePixel = 0
+	GuiName.Size = UDim2.new(0, 121, 0, 38)
+	GuiName.Font = Enum.Font.SourceSans
+	GuiName.Text = "Ceo Gui System"
+	GuiName.TextColor3 = Color3.fromRGB(0, 0, 0)
+	GuiName.TextSize = 14.000
+
+	GuiNameCorner.CornerRadius = UDim.new(0, 10)
+	GuiNameCorner.Parent = GuiName
+
+	Options.Name = "Options"
+	Options.Parent = MainGui
+	Options.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Options.BackgroundTransparency = 0.600
+	Options.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Options.BorderSizePixel = 0
+	Options.Position = UDim2.new(0, 0, 0.139109373, 0)
+	Options.Size = UDim2.new(0, 120, 0, 207)
+
+	OptionCorner.CornerRadius = UDim.new(0, 0)
+	OptionCorner.Parent = Options
+
+	MenuButton.Name = "MenuButton"
+	MenuButton.Parent = Options
+	MenuButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MenuButton.BackgroundTransparency = 0.500
+	MenuButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	MenuButton.BorderSizePixel = 0
+	MenuButton.Position = UDim2.new(0.0824381486, 0, 0.845300078, 0)
+	MenuButton.Size = UDim2.new(0, 95, 0, 20)
+	MenuButton.Font = Enum.Font.SourceSans
+	MenuButton.Text = "Menu"
+	MenuButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	MenuButton.TextSize = 14.000
+	MenuButtonCorner.Parent = MenuButton
+
+	OptionsButton.Name = "OptionsButton"
+	OptionsButton.Parent = Options
+	OptionsButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	OptionsButton.BackgroundTransparency = 0.500
+	OptionsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	OptionsButton.BorderSizePixel = 0
+	OptionsButton.Position = UDim2.new(0.0824381486, 0, 0.709684074, 0)
+	OptionsButton.Size = UDim2.new(0, 95, 0, 20)
+	OptionsButton.Font = Enum.Font.SourceSans
+	OptionsButton.Text = "Options"
+	OptionsButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	OptionsButton.TextSize = 14.000
+	OptionsButtonCorner.Parent = OptionsButton
+
+	AttackButton.Name = "AttackButton"
+	AttackButton.Parent = Options
+	AttackButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AttackButton.BackgroundTransparency = 0.500
+	AttackButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AttackButton.BorderSizePixel = 0
+	AttackButton.Position = UDim2.new(0.0659093186, 0, 0.0366744623, 0)
+	AttackButton.Size = UDim2.new(0, 95, 0, 20)
+	AttackButton.Font = Enum.Font.SourceSans
+	AttackButton.Text = "Attack"
+	AttackButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	AttackButton.TextSize = 14.000
+	AttackButtonCorner.Parent = AttackButton
+
+	CounterBotButton.Name = "CounterBotButton"
+	CounterBotButton.Parent = Options
+	CounterBotButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CounterBotButton.BackgroundTransparency = 0.500
+	CounterBotButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBotButton.BorderSizePixel = 0
+	CounterBotButton.Position = UDim2.new(0.0820002258, 0, 0.300000042, 0)
+	CounterBotButton.Size = UDim2.new(0, 95, 0, 20)
+	CounterBotButton.Font = Enum.Font.SourceSans
+	CounterBotButton.Text = "CounterBot"
+	CounterBotButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBotButton.TextSize = 14.000
+	CounterBotButtonCorner.Parent = CounterBotButton
+
+	CounterBot2Button.Name = "CounterBot2Button"
+	CounterBot2Button.Parent = Options
+	CounterBot2Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CounterBot2Button.BackgroundTransparency = 0.500
+	CounterBot2Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBot2Button.BorderSizePixel = 0
+	CounterBot2Button.Position = UDim2.new(0.0816665664, 0, 0.434830964, 0)
+	CounterBot2Button.Size = UDim2.new(0, 95, 0, 20)
+	CounterBot2Button.Font = Enum.Font.SourceSans
+	CounterBot2Button.Text = "CounterBot 2"
+	CounterBot2Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBot2Button.TextSize = 14.000
+	CounterBot2ButtonCorner.Parent = CounterBot2Button
+
+	FunAttacksButton.Name = "FunAttacksButton"
+	FunAttacksButton.Parent = Options
+	FunAttacksButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	FunAttacksButton.BackgroundTransparency = 0.500
+	FunAttacksButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	FunAttacksButton.BorderSizePixel = 0
+	FunAttacksButton.Position = UDim2.new(0.0741048157, 0, 0.578898847, 0)
+	FunAttacksButton.Size = UDim2.new(0, 95, 0, 20)
+	FunAttacksButton.Font = Enum.Font.SourceSans
+	FunAttacksButton.Text = "FunAttacks"
+	FunAttacksButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	FunAttacksButton.TextSize = 14.000
+	FunAttacksButtonCorner.Parent = FunAttacksButton
+
+	Attack2Button.Name = "Attack2Button"
+	Attack2Button.Parent = Options
+	Attack2Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Attack2Button.BackgroundTransparency = 0.500
+	Attack2Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Attack2Button.BorderSizePixel = 0
+	Attack2Button.Position = UDim2.new(0.0829999968, 0, 0.150000006, 4)
+	Attack2Button.Size = UDim2.new(0, 95, 0, 20)
+	Attack2Button.Font = Enum.Font.SourceSans
+	Attack2Button.Text = "Attack2"
+	Attack2Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Attack2Button.TextSize = 14.000
+	AttackButtonCorner_2.Parent = Attack2Button
+
+	CloseButton.Name = "Close Button"
+	CloseButton.Parent = MainGui
+	CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CloseButton.BackgroundTransparency = 1.000
+	CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CloseButton.BorderSizePixel = 0
+	CloseButton.Position = UDim2.new(0.920000017, 0, 0, 0)
+	CloseButton.Size = UDim2.new(0, 40, 0, 38)
+	CloseButton.Font = Enum.Font.SourceSans
+	CloseButton.Text = "❌"
+	CloseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	CloseButton.TextSize = 14.000
+	UICorner.CornerRadius = UDim.new(0, 0)
+	UICorner.Parent = CloseButton
+
+	MenuFrame.Name = "MenuFrame"
+	MenuFrame.Parent = MainGui
+	MenuFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MenuFrame.BackgroundTransparency = 0.500
+	MenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	MenuFrame.BorderSizePixel = 0
+	MenuFrame.Position = UDim2.new(0.289000005, 0, 0.138999969, 0)
+	MenuFrame.Size = UDim2.new(0, 295, 0, 207)
+	MenuFrame.Visible = false
+	UICorner_2.CornerRadius = UDim.new(0, 0)
+	UICorner_2.Parent = MenuFrame
+
+	AutoM1.Name = "AutoM1"
+	AutoM1.Parent = MenuFrame
+	AutoM1.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	AutoM1.BackgroundTransparency = 0.500
+	AutoM1.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AutoM1.BorderSizePixel = 0
+	AutoM1.Position = UDim2.new(0.0456983671, 0, 0.0344827995, 0)
+	AutoM1.Size = UDim2.new(0, 200, 0, 19)
+	AutoM1.Font = Enum.Font.SourceSans
+	AutoM1.Text = "Auto M1"
+	AutoM1.TextColor3 = Color3.fromRGB(0, 0, 0)
+	AutoM1.TextSize = 14.000
+	UICorner_3.Parent = AutoM1
+
+	Onoff.Name = "On/off"
+	Onoff.Parent = AutoM1
+	Onoff.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Onoff.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff.BorderSizePixel = 0
+	Onoff.Position = UDim2.new(1.07576191, 0, 0, 0)
+	Onoff.Size = UDim2.new(0, 56, 0, 19)
+	Onoff.Font = Enum.Font.SourceSans
+	Onoff.Text = "Start"
+	Onoff.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff.TextSize = 14.000
+
+	AutoM2.Name = "AutoM2"
+	AutoM2.Parent = MenuFrame
+	AutoM2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	AutoM2.BackgroundTransparency = 0.500
+	AutoM2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AutoM2.BorderSizePixel = 0
+	AutoM2.Position = UDim2.new(0.0456983671, 0, 0.16791597, 0)
+	AutoM2.Size = UDim2.new(0, 200, 0, 19)
+	AutoM2.Font = Enum.Font.SourceSans
+	AutoM2.Text = "Auto M2"
+	AutoM2.TextColor3 = Color3.fromRGB(0, 0, 0)
+	AutoM2.TextSize = 14.000
+	UICorner_4.Parent = AutoM2
+
+	Onoff_2.Name = "On/off"
+	Onoff_2.Parent = AutoM2
+	Onoff_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Onoff_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_2.BorderSizePixel = 0
+	Onoff_2.Position = UDim2.new(1.07576191, 0, 0, 0)
+	Onoff_2.Size = UDim2.new(0, 56, 0, 19)
+	Onoff_2.AutoButtonColor = false
+	Onoff_2.Font = Enum.Font.SourceSans
+	Onoff_2.Text = "Start"
+	Onoff_2.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_2.TextSize = 14.000
+
+	AutoBlock.Name = "AutoBlock"
+	AutoBlock.Parent = MenuFrame
+	AutoBlock.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	AutoBlock.BackgroundTransparency = 0.500
+	AutoBlock.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AutoBlock.BorderSizePixel = 0
+	AutoBlock.Position = UDim2.new(0.0426101945, 0, 0.29797098, 0)
+	AutoBlock.Size = UDim2.new(0, 200, 0, 19)
+	AutoBlock.Font = Enum.Font.SourceSans
+	AutoBlock.Text = "Auto Block"
+	AutoBlock.TextColor3 = Color3.fromRGB(0, 0, 0)
+	AutoBlock.TextSize = 14.000
+	UICorner_5.Parent = AutoBlock
+
+	Onoff_3.Name = "On/off"
+	Onoff_3.Parent = AutoBlock
+	Onoff_3.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Onoff_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_3.BorderSizePixel = 0
+	Onoff_3.Position = UDim2.new(1.07576191, 0, 0, 0)
+	Onoff_3.Size = UDim2.new(0, 56, 0, 19)
+	Onoff_3.Font = Enum.Font.SourceSans
+	Onoff_3.Text = "Start"
+	Onoff_3.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_3.TextSize = 14.000
+
+	Hitbox.Name = "Hitbox"
+	Hitbox.Parent = MenuFrame
+	Hitbox.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Hitbox.BackgroundTransparency = 0.500
+	Hitbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Hitbox.BorderSizePixel = 0
+	Hitbox.Position = UDim2.new(0.039921958, 0, 0.434236228, 0)
+	Hitbox.Size = UDim2.new(0, 200, 0, 19)
+	Hitbox.Font = Enum.Font.SourceSans
+	Hitbox.Text = "Hitbox"
+	Hitbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Hitbox.TextSize = 14.000
+	UICorner_6.Parent = Hitbox
+
+	ColorInput.Name = "ColorInput"
+	ColorInput.Parent = Hitbox
+	ColorInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	ColorInput.BackgroundTransparency = 0.500
+	ColorInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ColorInput.BorderSizePixel = 0
+	ColorInput.Position = UDim2.new(0.0014865112, 0, 1.56748557, 0)
+	ColorInput.Size = UDim2.new(0, 124, 0, 19)
+	ColorInput.Font = Enum.Font.SourceSans
+	ColorInput.Text = "FF0000"
+	ColorInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+	ColorInput.TextSize = 14.000
+	UICorner_7.Parent = ColorInput
+
+	SizeInput.Name = "SizeInput"
+	SizeInput.Parent = Hitbox
+	SizeInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	SizeInput.BackgroundTransparency = 0.500
+	SizeInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	SizeInput.BorderSizePixel = 0
+	SizeInput.Position = UDim2.new(0.747400224, 0, 1.56748557, 0)
+	SizeInput.Size = UDim2.new(0, 109, 0, 19)
+	SizeInput.Font = Enum.Font.SourceSans
+	SizeInput.Text = "5"
+	SizeInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+	SizeInput.TextSize = 14.000
+	UICorner_8.Parent = SizeInput
+
+	Onoff_4.Name = "On/off"
+	Onoff_4.Parent = SizeInput
+	Onoff_4.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Onoff_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_4.BorderSizePixel = 0
+	Onoff_4.Position = UDim2.new(0.60754168, 0, -1.57894742, 0)
+	Onoff_4.Size = UDim2.new(0, 56, 0, 19)
+	Onoff_4.Font = Enum.Font.SourceSans
+	Onoff_4.Text = "Start"
+	Onoff_4.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Onoff_4.TextSize = 14.000
+
+	PlayerNameInput.Name = "PlayerNameInput"
+	PlayerNameInput.Parent = Hitbox
+	PlayerNameInput.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	PlayerNameInput.BackgroundTransparency = 0.500
+	PlayerNameInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	PlayerNameInput.BorderSizePixel = 0
+	PlayerNameInput.Position = UDim2.new(0.00380204921, 0, 3.04116988, 0)
+	PlayerNameInput.Size = UDim2.new(0, 260, 0, 18)
+	PlayerNameInput.Font = Enum.Font.SourceSans
+	PlayerNameInput.Text = ""
+	PlayerNameInput.PlaceholderText = "Immune Player Name"
+	PlayerNameInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+	PlayerNameInput.TextSize = 14.000
+	UICorner_9.Parent = PlayerNameInput
+
+	Immune.Name = "Immune"
+	Immune.Parent = PlayerNameInput
+	Immune.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Immune.BackgroundTransparency = 0.500
+	Immune.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Immune.BorderSizePixel = 0
+	Immune.Position = UDim2.new(0.0036292444, 0, 1.33333337, 0)
+	Immune.Size = UDim2.new(0, 122, 0, 18)
+	Immune.Font = Enum.Font.SourceSans
+	Immune.Text = "Immune"
+	Immune.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Immune.TextSize = 14.000
+	UICorner_10.Parent = Immune
+
+	Immune_2.Name = "Immune"
+	Immune_2.Parent = PlayerNameInput
+	Immune_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Immune_2.BackgroundTransparency = 0.500
+	Immune_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Immune_2.BorderSizePixel = 0
+	Immune_2.Position = UDim2.new(0.571998477, 0, 1.33333337, 0)
+	Immune_2.Size = UDim2.new(0, 108, 0, 18)
+	Immune_2.Font = Enum.Font.SourceSans
+	Immune_2.Text = "Unimmune"
+	Immune_2.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Immune_2.TextSize = 14.000
+	UICorner_11.Parent = Immune_2
+
+	OptionsFrame.Name = "OptionsFrame"
+	OptionsFrame.Parent = MainGui
+	OptionsFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	OptionsFrame.BackgroundTransparency = 0.500
+	OptionsFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	OptionsFrame.BorderSizePixel = 0
+	OptionsFrame.Position = UDim2.new(0.289306343, 0, 0.139109373, 0)
+	OptionsFrame.Size = UDim2.new(0, 294, 0, 206)
+	OptionsFrame.Visible = false
+	UICorner_12.CornerRadius = UDim.new(0, 0)
+	UICorner_12.Parent = OptionsFrame
+
+	RejoinServer.Name = "RejoinServer"
+	RejoinServer.Parent = OptionsFrame
+	RejoinServer.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	RejoinServer.BackgroundTransparency = 0.500
+	RejoinServer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	RejoinServer.BorderSizePixel = 0
+	RejoinServer.Position = UDim2.new(0.0449409746, 0, 0.0415723473, 0)
+	RejoinServer.Size = UDim2.new(0, 198, 0, 19)
+	RejoinServer.Font = Enum.Font.SourceSans
+	RejoinServer.Text = "Rejoin Same Server"
+	RejoinServer.TextColor3 = Color3.fromRGB(0, 0, 0)
+	RejoinServer.TextSize = 14.000
+	UICorner_13.Parent = RejoinServer
+
+	Click.Name = "Click"
+	Click.Parent = RejoinServer
+	Click.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Click.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Click.BorderSizePixel = 0
+	Click.Position = UDim2.new(1.08429122, 0, 0, 0)
+	Click.Size = UDim2.new(0, 56, 0, 19)
+	Click.Font = Enum.Font.SourceSans
+	Click.Text = "Click"
+	Click.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Click.TextSize = 14.000
+
+	ResetButton.Name = "Reset Button"
+	ResetButton.Parent = OptionsFrame
+	ResetButton.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	ResetButton.BackgroundTransparency = 0.500
+	ResetButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ResetButton.BorderSizePixel = 0
+	ResetButton.Position = UDim2.new(0.0448251329, 0, 0.168745324, 0)
+	ResetButton.Size = UDim2.new(0, 198, 0, 19)
+	ResetButton.Font = Enum.Font.SourceSans
+	ResetButton.Text = "Reset"
+	ResetButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	ResetButton.TextSize = 14.000
+	UICorner_14.Parent = ResetButton
+
+	Click_2.Name = "Click"
+	Click_2.Parent = ResetButton
+	Click_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Click_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Click_2.BorderSizePixel = 0
+	Click_2.Position = UDim2.new(1.08339548, 0, 0, 0)
+	Click_2.Size = UDim2.new(0, 56, 0, 19)
+	Click_2.Font = Enum.Font.SourceSans
+	Click_2.Text = "Click"
+	Click_2.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Click_2.TextSize = 14.000
+
+	FunAttacksFrame.Name = "FunAttacksFrame"
+	FunAttacksFrame.Parent = MainGui
+	FunAttacksFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	FunAttacksFrame.BackgroundTransparency = 0.500
+	FunAttacksFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	FunAttacksFrame.BorderSizePixel = 0
+	FunAttacksFrame.Position = UDim2.new(0.289000005, 0, 0.138999999, 0)
+	FunAttacksFrame.Size = UDim2.new(0, 295, 0, 207)
+	FunAttacksFrame.Visible = false
+	UICorner_15.CornerRadius = UDim.new(0, 0)
+	UICorner_15.Parent = FunAttacksFrame
+
+	CounterBot2Frame.Name = "CounterBot2Frame"
+	CounterBot2Frame.Parent = MainGui
+	CounterBot2Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CounterBot2Frame.BackgroundTransparency = 0.500
+	CounterBot2Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBot2Frame.BorderSizePixel = 0
+	CounterBot2Frame.Position = UDim2.new(0.289000005, 0, 0.138999999, 0)
+	CounterBot2Frame.Size = UDim2.new(0, 295, 0, 207)
+	CounterBot2Frame.Visible = false
+	UICorner_16.CornerRadius = UDim.new(0, 0)
+	UICorner_16.Parent = CounterBot2Frame
+
+	CounterBotFrame.Name = "CounterBotFrame"
+	CounterBotFrame.Parent = MainGui
+	CounterBotFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CounterBotFrame.BackgroundTransparency = 0.500
+	CounterBotFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CounterBotFrame.BorderSizePixel = 0
+	CounterBotFrame.Position = UDim2.new(0.289000005, 0, 0.138999999, 0)
+	CounterBotFrame.Size = UDim2.new(0, 295, 0, 207)
+	CounterBotFrame.Visible = false
+	UICorner_17.CornerRadius = UDim.new(0, 0)
+	UICorner_17.Parent = CounterBotFrame
+
+	AttackFrame.Name = "AttackFrame"
+	AttackFrame.Parent = MainGui
+	AttackFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AttackFrame.BackgroundTransparency = 0.500
+	AttackFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AttackFrame.BorderSizePixel = 0
+	AttackFrame.Position = UDim2.new(0.289156616, 0, 0.139109373, 0)
+	AttackFrame.Size = UDim2.new(0, 295, 0, 207)
+	AttackFrame.Visible = false
+	UICorner_18.CornerRadius = UDim.new(0, 0)
+	UICorner_18.Parent = AttackFrame
+
+	Attack2Frame.Name = "Attack2Frame"
+	Attack2Frame.Parent = MainGui
+	Attack2Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Attack2Frame.BackgroundTransparency = 0.500
+	Attack2Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Attack2Frame.BorderSizePixel = 0
+	Attack2Frame.Position = UDim2.new(0.289156616, 0, 0.139109373, 0)
+	Attack2Frame.Size = UDim2.new(0, 295, 0, 207)
+	Attack2Frame.Visible = false
+	UICorner_19.CornerRadius = UDim.new(0, 0)
+	UICorner_19.Parent = Attack2Frame
+
+	MiniGui.Name = "Mini Gui"
+	MiniGui.Parent = ExploitGui
+	MiniGui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MiniGui.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	MiniGui.BorderSizePixel = 0
+	MiniGui.Position = UDim2.new(0.625651062, 6, 0.302648157, -3)
+	MiniGui.Size = UDim2.new(0, 60, 0, 60)
+	MiniGui.Visible = false
+	MiniGui.Font = Enum.Font.SourceSans
+	MiniGui.Text = "Reopen"
+	MiniGui.TextColor3 = Color3.fromRGB(0, 0, 0)
+	MiniGui.TextSize = 14.000
+
+	ImageLabel.Parent = MiniGui
+	ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ImageLabel.BorderSizePixel = 0
+	ImageLabel.Position = UDim2.new(-0.00500081386, 0, -5.08626329e-07, 0)
+	ImageLabel.Size = UDim2.new(0, 60, 0, 60)
+	ImageLabel.Image = "rbxassetid://129661036792100"
+	UICorner_20.CornerRadius = UDim.new(1, 0)
+	UICorner_20.Parent = ImageLabel
+	UICorner_21.CornerRadius = UDim.new(1, 0)
+	UICorner_21.Parent = MiniGui
+
+	print("[CeoGui]: Instances built successfully. Initializing logic...")
+
+	-- Functional Logic Implementation:
+	local mainScale = MainGui:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", MainGui)
+	local miniScale = MiniGui:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", MiniGui)
+
+	local shrinkInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+	local expandInfo = TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+
+	CloseButton.MouseButton1Click:Connect(function()
+		local btnPos = CloseButton.AbsolutePosition
+		local btnSize = CloseButton.AbsoluteSize
+
+		MiniGui.Position = UDim2.new(0, btnPos.X + btnSize.X/2, 0, btnPos.Y + btnSize.Y/2)
+		MiniGui.AnchorPoint = Vector2.new(0.5, 0.5)
+
+		mainScale.Scale = 1
+		local shrink = TweenService:Create(mainScale, shrinkInfo, {Scale = 0})
+		shrink:Play()
+		shrink.Completed:Wait()
+
+		MainGui.Visible = false
+		mainScale.Scale = 1
+
+		MiniGui.Visible = true
+		miniScale.Scale = 0
+		local expandMini = TweenService:Create(miniScale, expandInfo, {Scale = 1})
+		expandMini:Play()
+	end)
+
+	-- Auto M1 Logic
+	local isM1Running = false
+	local CombatRemote = ReplicatedStorage:FindFirstChild("CombatRemote")
+
+	Onoff.MouseButton1Click:Connect(function()
+		isM1Running = not isM1Running
+		if isM1Running then
+			Onoff.Text = "Stop"
+			Onoff.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+			task.spawn(function()
+				while isM1Running do
+					if CombatRemote then
+						CombatRemote:FireServer("M1")
+					end
+					task.wait(0.01)
+				end
+			end)
+		else
+			Onoff.Text = "Start"
+			Onoff.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+		end
+	end)
+
+	-- Auto M2 Logic
+	local isM2Running = false
+
+	Onoff_2.MouseButton1Click:Connect(function()
+		isM2Running = not isM2Running
+		if isM2Running then
+			Onoff_2.Text = "Stop"
+			Onoff_2.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+			task.spawn(function()
+				while isM2Running do
+					if CombatRemote then
+						CombatRemote:FireServer("M2")
+					end
+					task.wait(0.01)
+				end
+			end)
+		else
+			Onoff_2.Text = "Start"
+			Onoff_2.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+		end
+	end)
+
+	-- Auto Block Logic (Safeguarded for VirtualInputManager)
+	local isBlockRunning = false
+
+	Onoff_3.MouseButton1Click:Connect(function()
+		if not VirtualInputManager then
+			warn("VirtualInputManager is not supported by this executor.")
+			return
+		end
+		isBlockRunning = not isBlockRunning
+		if isBlockRunning then
+			Onoff_3.Text = "Stop"
+			Onoff_3.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+			task.spawn(function()
+				while isBlockRunning do
+					VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+					task.wait(0)
+				end
+				VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+			end)
+		else
+			Onoff_3.Text = "Start"
+			Onoff_3.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+		end
+	end)
+
+	-- Hitbox & Immunity Logic
+	local isMainRunning = false
+	local customPlayerSizes = {}
+	local affectedCharacters = {}
+	local playerConnections = {}
+	local playerAddedConn = nil
+
+	local function hexToColor3(hex)
+		hex = hex:gsub("#", "")
+		if #hex ~= 6 then 
+			return Color3.fromRGB(255, 0, 0)
+		end
+		local r = tonumber(hex:sub(1, 2), 16) or 255
+		local g = tonumber(hex:sub(3, 4), 16) or 255
+		local b = tonumber(hex:sub(5, 6), 16) or 255
+		return Color3.fromRGB(r, g, b)
+	end
+
+	local function applyHitboxToCharacter(character, size, outlineColor)
+		local rootPart = character:FindFirstChild("HumanoidRootPart")
+		if not rootPart or character == player.Character then return end
+
+		if not affectedCharacters[character] then
+			affectedCharacters[character] = {
+				RootPart = rootPart,
+				OriginalSize = rootPart.Size,
+				OriginalCanCollide = rootPart.CanCollide,
+			}
+		end
+
+		rootPart.Size = Vector3.new(size, size, size)
+		rootPart.CanCollide = false
+		rootPart.Transparency = 1
+
+		local selectionBox = rootPart:FindFirstChild("HitboxOutline")
+		if not selectionBox then
+			selectionBox = Instance.new("SelectionBox")
+			selectionBox.Name = "HitboxOutline"
+			selectionBox.LineThickness = 0.05
+			selectionBox.Adornee = rootPart
+			selectionBox.Parent = rootPart
+		end
+		selectionBox.Color3 = outlineColor
+	end
+
+	local function resetCharacterHitbox(character)
+		local data = affectedCharacters[character]
+		if data and data.RootPart and data.RootPart.Parent then
+			data.RootPart.Size = data.OriginalSize
+			data.RootPart.CanCollide = data.OriginalCanCollide
+			local outline = data.RootPart:FindFirstChild("HitboxOutline")
+			if outline then outline:Destroy() end
+			affectedCharacters[character] = nil
+		end
+	end
+
+	local function updateHitboxes()
+		local mainSize = tonumber(SizeInput.Text) or 15
+		local mainColor = hexToColor3(ColorInput.Text)
+
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= player and p.Character then
+				if customPlayerSizes[p] then
+					local customSize = customPlayerSizes[p]
+					if customSize <= 2 then
+						resetCharacterHitbox(p.Character)
+					else
+						applyHitboxToCharacter(p.Character, customSize, Color3.fromRGB(0, 255, 255))
+					end
+				elseif isMainRunning then
+					applyHitboxToCharacter(p.Character, mainSize, mainColor)
+				else
+					resetCharacterHitbox(p.Character)
+				end
+			end
+		end
+	end
+
+	local function setupConnections()
+		if playerAddedConn then return end
+		playerAddedConn = Players.PlayerAdded:Connect(function(p)
+			if p ~= player then
+				playerConnections[p] = p.CharacterAdded:Connect(function(char)
+					task.wait(0.5)
+					updateHitboxes()
+				end)
+			end
+		end)
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= player and not playerConnections[p] then
+				playerConnections[p] = p.CharacterAdded:Connect(function(char)
+					task.wait(0.5)
+					updateHitboxes()
+				end)
+			end
+		end
+	end
+
+	Onoff_4.MouseButton1Click:Connect(function()
+		isMainRunning = not isMainRunning
+		if isMainRunning then
+			Onoff_4.Text = "Stop"
+			Onoff_4.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+			setupConnections()
+			updateHitboxes()
+		else
+			Onoff_4.Text = "Start"
+			Onoff_4.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+			updateHitboxes()
+		end
+	end)
+
+	local function findMatchingPlayer(searchTerm)
+		if searchTerm == "" or searchTerm == "Immune" then return nil end
+		searchTerm = searchTerm:lower()
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= player then
+				if p.Name:lower():find(searchTerm, 1, true) or p.DisplayName:lower():find(searchTerm, 1, true) then
+					return p
+				end
+			end
+		end
+		return nil
+	end
+
+	Immune.MouseButton1Click:Connect(function()
+		local matchedPlayer = findMatchingPlayer(PlayerNameInput.Text)
+		if not matchedPlayer then
+			warn("No matching player found!")
+			return
+		end
+		customPlayerSizes[matchedPlayer] = 2
+		print(matchedPlayer.Name .. " is now immune.")
+		updateHitboxes()
+	end)
+
+	Immune_2.MouseButton1Click:Connect(function()
+		local matchedPlayer = findMatchingPlayer(PlayerNameInput.Text)
+		if not matchedPlayer then
+			warn("No matching player found!")
+			return
+		end
+		customPlayerSizes[matchedPlayer] = nil
+		print(matchedPlayer.Name .. " un-immunized.")
+		if matchedPlayer.Character then
+			resetCharacterHitbox(matchedPlayer.Character)
+		end
+		updateHitboxes()
+	end)
+
+	-- Rejoin Server Button Logic
+	Click.MouseButton1Click:Connect(function()
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+	end)
+
+	-- Reset Character Button Logic
+	Click_2.MouseButton1Click:Connect(function()
+		local character = player.Character
+		if character then
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				humanoid.Health = 0
+			else
+				character:BreakJoints()
+			end
+		end
+	end)
+
+	-- Options Frame Switching Logic:
+	local frames = {
+		Attack = AttackFrame,
+		Attack2 = Attack2Frame,
+		CounterBot = CounterBotFrame,
+		CounterBot2 = CounterBot2Frame,
+		FunAttacks = FunAttacksFrame,
+		Options = OptionsFrame,
+		Menu = MenuFrame,
+	}
+
+	local buttons = {
+		Attack = AttackButton,
+		Attack2 = Attack2Button,
+		CounterBot = CounterBotButton,
+		CounterBot2 = CounterBot2Button,
+		FunAttacks = FunAttacksButton,
+		Options = OptionsButton,
+		Menu = MenuButton,
+	}
+
+	local function hideAllFrames()
+		for _, frame in pairs(frames) do
+			frame.Visible = false
+		end
+	end
+
+	hideAllFrames()
+	MenuFrame.Visible = true
+
+	for name, button in pairs(buttons) do
+		button.MouseButton1Click:Connect(function()
+			hideAllFrames()
+			frames[name].Visible = true
+		end)
+	end
+
+	-- Draggable Function for Main Gui
+	local function makeDraggable(guiObject)
+		local dragging, dragInput, dragStart, startPos
+		
+		guiObject.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = guiObject.Position
+				
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+					end
+				end)
+			end
+		end)
+		
+		guiObject.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				dragInput = input
+			end
+		end)
+		
+		UserInputService.InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				local delta = input.Position - dragStart
+				guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			end
+		end)
+	end
+
+	makeDraggable(MainGui)
+
+	-- Draggable & Click Logic for Mini Gui
+	local function makeDraggableWithClick(guiObject, onClick)
+		local dragging = false
+		local dragInput = nil
+		local dragStart = nil
+		local startPos = nil
+		local startAbsolutePos = Vector2.new(0, 0)
+		
+		guiObject.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = guiObject.Position
+				startAbsolutePos = guiObject.AbsolutePosition
+				
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						if dragging then
+							dragging = false
+							if (guiObject.AbsolutePosition - startAbsolutePos).Magnitude < 6 then
+								if onClick then onClick() end
+							end
+						end
+					end
+				end)
+			end
+		end)
+		
+		guiObject.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				dragInput = input
+			end
+		end)
+		
+		UserInputService.InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				local delta = input.Position - dragStart
+				guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			end
+		end)
+	end
+
+	makeDraggableWithClick(MiniGui, function()
+		MainGui.AnchorPoint = Vector2.new(0.5, 0.5)
+		MainGui.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+		MiniGui.Visible = false
+		MainGui.Visible = true
+		mainScale.Scale = 0
+
+		local expandMain = TweenService:Create(mainScale, expandInfo, {Scale = 1})
+		expandMain:Play()
+	end)
+
+	print("Ceo Gui System loaded and centered successfully!")
 end)
 
-print("Ceo Gui System loaded successfully!")
+if not success then
+	warn("SCRIPT ERROR: " .. tostring(errorMessage))
+end
