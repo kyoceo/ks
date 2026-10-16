@@ -32,17 +32,17 @@ local AutoResetTextLabel = Instance.new("TextLabel")
 local UICorner_13 = Instance.new("UICorner")
 local AutoResetButton = Instance.new("TextButton")
 local UICorner_14 = Instance.new("UICorner")
-local TextLabel = Instance.new("TextLabel")
-local UICorner_15 = Instance.new("UICorner")
 local AutoVoidTextLabel = Instance.new("TextLabel")
-local UICorner_16 = Instance.new("UICorner")
+local UICorner_15 = Instance.new("UICorner")
 local AutoVoidButton = Instance.new("TextButton")
-local UICorner_17 = Instance.new("UICorner")
+local UICorner_16 = Instance.new("UICorner")
 local VoidDropCount = Instance.new("TextBox")
-local UICorner_18 = Instance.new("UICorner")
+local UICorner_17 = Instance.new("UICorner")
 local VoidDropSpeed = Instance.new("TextBox")
-local UICorner_19 = Instance.new("UICorner")
+local UICorner_18 = Instance.new("UICorner")
 local VoidDropDelay = Instance.new("TextBox")
+local UICorner_19 = Instance.new("UICorner")
+local AutoVoidDescriptionTextLabel = Instance.new("TextLabel")
 local UICorner_20 = Instance.new("UICorner")
 local AutoWeaponTextLabel = Instance.new("TextLabel")
 local UICorner_21 = Instance.new("UICorner")
@@ -176,8 +176,8 @@ AutoFrame.BackgroundTransparency = 0.500
 AutoFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 AutoFrame.BorderSizePixel = 0
 AutoFrame.Position = UDim2.new(0.224000007, 0, -0.420000136, 139)
-AutoFrame.Size = UDim2.new(0, 389, 0, 215)
-AutoFrame.CanvasPosition = Vector2.new(0, 185)
+AutoFrame.Size = UDim2.new(0, 389, 0, 216)
+AutoFrame.CanvasPosition = Vector2.new(0, 84)
 
 UICorner_8.CornerRadius = UDim.new(0, 0)
 UICorner_8.Parent = AutoFrame
@@ -275,20 +275,6 @@ AutoResetButton.TextSize = 14.000
 
 UICorner_14.Parent = AutoResetButton
 
-TextLabel.Parent = AutoResetButton
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 0.500
-TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.BorderSizePixel = 0
-TextLabel.Position = UDim2.new(-3.06947947, 0, 4.5, 0)
-TextLabel.Size = UDim2.new(0, 344, 0, 46)
-TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Count = Number of voids (average: 3–5).\\nSpeed = Speed of going to the void (average: 1K–2K, but can go higher).\\nDelay = Time delay before going to the void (fastest: 0.5, maximum: 4)."
-TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.TextSize = 14.000
-
-UICorner_15.Parent = TextLabel
-
 AutoVoidTextLabel.Name = "AutoVoidTextLabel"
 AutoVoidTextLabel.Parent = AutoFrame
 AutoVoidTextLabel.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
@@ -302,8 +288,8 @@ AutoVoidTextLabel.Text = "Auto Void"
 AutoVoidTextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 AutoVoidTextLabel.TextSize = 14.000
 
-UICorner_16.CornerRadius = UDim.new(0, 10)
-UICorner_16.Parent = AutoVoidTextLabel
+UICorner_15.CornerRadius = UDim.new(0, 10)
+UICorner_15.Parent = AutoVoidTextLabel
 
 AutoVoidButton.Name = "AutoVoidButton"
 AutoVoidButton.Parent = AutoVoidTextLabel
@@ -318,7 +304,7 @@ AutoVoidButton.Text = "Start"
 AutoVoidButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 AutoVoidButton.TextSize = 14.000
 
-UICorner_17.Parent = AutoVoidButton
+UICorner_16.Parent = AutoVoidButton
 
 VoidDropCount.Name = "VoidDropCount"
 VoidDropCount.Parent = AutoVoidButton
@@ -333,8 +319,8 @@ VoidDropCount.Text = "Count"
 VoidDropCount.TextColor3 = Color3.fromRGB(0, 0, 0)
 VoidDropCount.TextSize = 14.000
 
-UICorner_18.CornerRadius = UDim.new(0, 10)
-UICorner_18.Parent = VoidDropCount
+UICorner_17.CornerRadius = UDim.new(0, 10)
+UICorner_17.Parent = VoidDropCount
 
 VoidDropSpeed.Name = "VoidDropSpeed"
 VoidDropSpeed.Parent = AutoVoidButton
@@ -349,8 +335,8 @@ VoidDropSpeed.Text = "Speed"
 VoidDropSpeed.TextColor3 = Color3.fromRGB(0, 0, 0)
 VoidDropSpeed.TextSize = 14.000
 
-UICorner_19.CornerRadius = UDim.new(0, 10)
-UICorner_19.Parent = VoidDropSpeed
+UICorner_18.CornerRadius = UDim.new(0, 10)
+UICorner_18.Parent = VoidDropSpeed
 
 VoidDropDelay.Name = "VoidDropDelay"
 VoidDropDelay.Parent = AutoVoidButton
@@ -365,8 +351,23 @@ VoidDropDelay.Text = "Delay"
 VoidDropDelay.TextColor3 = Color3.fromRGB(0, 0, 0)
 VoidDropDelay.TextSize = 14.000
 
-UICorner_20.CornerRadius = UDim.new(0, 10)
-UICorner_20.Parent = VoidDropDelay
+UICorner_19.CornerRadius = UDim.new(0, 10)
+UICorner_19.Parent = VoidDropDelay
+
+AutoVoidDescriptionTextLabel.Name = "AutoVoidDescriptionTextLabel"
+AutoVoidDescriptionTextLabel.Parent = AutoVoidTextLabel
+AutoVoidDescriptionTextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+AutoVoidDescriptionTextLabel.BackgroundTransparency = 0.500
+AutoVoidDescriptionTextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+AutoVoidDescriptionTextLabel.BorderSizePixel = 0
+AutoVoidDescriptionTextLabel.Position = UDim2.new(0.247701094, 0, 3.1500001, 0)
+AutoVoidDescriptionTextLabel.Size = UDim2.new(0, 261, 0, 46)
+AutoVoidDescriptionTextLabel.Font = Enum.Font.SourceSans
+AutoVoidDescriptionTextLabel.Text = "Count: 3-10, Speed: 1k up, Delay: 05-4 max"
+AutoVoidDescriptionTextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+AutoVoidDescriptionTextLabel.TextSize = 14.000
+
+UICorner_20.Parent = AutoVoidDescriptionTextLabel
 
 AutoWeaponTextLabel.Name = "AutoWeaponTextLabel"
 AutoWeaponTextLabel.Parent = AutoFrame
@@ -546,7 +547,7 @@ UICorner_31.Parent = AutoRustypipeButton
 
 -- Scripts:
 
-local function QPNIBK_fake_script() -- MainGuiFrame.OptionFramesScript 
+local function MUSQ_fake_script() -- MainGuiFrame.OptionFramesScript 
 	local script = Instance.new('LocalScript', MainGuiFrame)
 
 	--[====================================================================]
@@ -614,8 +615,8 @@ local function QPNIBK_fake_script() -- MainGuiFrame.OptionFramesScript
 	end)
 	]]
 end
-coroutine.wrap(QPNIBK_fake_script)()
-local function SRHK_fake_script() -- AutoM1Button.AutoM1Script 
+coroutine.wrap(MUSQ_fake_script)()
+local function KOXTD_fake_script() -- AutoM1Button.AutoM1Script 
 	local script = Instance.new('LocalScript', AutoM1Button)
 
 	--[====================================================================]
@@ -668,8 +669,8 @@ local function SRHK_fake_script() -- AutoM1Button.AutoM1Script
 		end
 	end)
 end
-coroutine.wrap(SRHK_fake_script)()
-local function IFKOCTN_fake_script() -- AutoBlockButton.AutoBlockScript 
+coroutine.wrap(KOXTD_fake_script)()
+local function ETDOMHW_fake_script() -- AutoBlockButton.AutoBlockScript 
 	local script = Instance.new('LocalScript', AutoBlockButton)
 
 	--[====================================================================]
@@ -722,8 +723,8 @@ local function IFKOCTN_fake_script() -- AutoBlockButton.AutoBlockScript
 		end
 	end)
 end
-coroutine.wrap(IFKOCTN_fake_script)()
-local function KUNLWO_fake_script() -- AutoResetButton.AutoResetScript 
+coroutine.wrap(ETDOMHW_fake_script)()
+local function BNBJ_fake_script() -- AutoResetButton.AutoResetScript 
 	local script = Instance.new('LocalScript', AutoResetButton)
 
 	-- LocalScript placed inside your Button (e.g., ResetButton)
@@ -746,8 +747,8 @@ local function KUNLWO_fake_script() -- AutoResetButton.AutoResetScript
 	-- Connect the function to run only when the button is clicked
 	button.MouseButton1Click:Connect(triggerReset)
 end
-coroutine.wrap(KUNLWO_fake_script)()
-local function TAFD_fake_script() -- AutoVoidButton.AutoVoidScript 
+coroutine.wrap(BNBJ_fake_script)()
+local function CDQQ_fake_script() -- AutoVoidButton.AutoVoidScript 
 	local script = Instance.new('LocalScript', AutoVoidButton)
 
 	--[====================================================================]
@@ -766,9 +767,9 @@ local function TAFD_fake_script() -- AutoVoidButton.AutoVoidScript
 	local speedBox = button:FindFirstChild("VoidDropsSpeed")
 	local delayBox = button:FindFirstChild("VoidDropDelay")
 	
-	local DEFAULT_COUNT = 0
-	local DEFAULT_SPEED = 0
-	local DEFAULT_DELAY = 0
+	local DEFAULT_COUNT = 10
+	local DEFAULT_SPEED = 3000
+	local DEFAULT_DELAY = 0.5
 	
 	local isRunning = false
 	
@@ -823,7 +824,7 @@ local function TAFD_fake_script() -- AutoVoidButton.AutoVoidScript
 					end
 				end
 				rootPart.AssemblyLinearVelocity = Vector3.new(0, -speed, 0)
-				task.wait(0.05)
+				task.wait(0)
 			end
 	
 			rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
@@ -887,8 +888,8 @@ local function TAFD_fake_script() -- AutoVoidButton.AutoVoidScript
 		end)
 	end)
 end
-coroutine.wrap(TAFD_fake_script)()
-local function WNRD_fake_script() -- AutoAxeButton.AutoAxeScript 
+coroutine.wrap(CDQQ_fake_script)()
+local function IRWE_fake_script() -- AutoAxeButton.AutoAxeScript 
 	local script = Instance.new('LocalScript', AutoAxeButton)
 
 	--[====================================================================]
@@ -984,8 +985,8 @@ local function WNRD_fake_script() -- AutoAxeButton.AutoAxeScript
 		end
 	end)
 end
-coroutine.wrap(WNRD_fake_script)()
-local function NCZK_fake_script() -- AutoShortSwordButton.AutoShortSwordScript 
+coroutine.wrap(IRWE_fake_script)()
+local function OLRBJ_fake_script() -- AutoShortSwordButton.AutoShortSwordScript 
 	local script = Instance.new('LocalScript', AutoShortSwordButton)
 
 	--[====================================================================]
@@ -999,7 +1000,7 @@ local function NCZK_fake_script() -- AutoShortSwordButton.AutoShortSwordScript
 	local LocalPlayer = Players.LocalPlayer
 	
 	-- Change this to the exact name of the item you want to auto-equip
-	local WEAPON_NAME = "Shortsword"
+	local WEAPON_NAME = "ShortSword"
 	
 	local isRunning = false
 	local equipThread = nil
@@ -1081,8 +1082,8 @@ local function NCZK_fake_script() -- AutoShortSwordButton.AutoShortSwordScript
 		end
 	end)
 end
-coroutine.wrap(NCZK_fake_script)()
-local function RTEU_fake_script() -- AutoKatanaButton.AutoKatanaScript 
+coroutine.wrap(OLRBJ_fake_script)()
+local function VSEUNQ_fake_script() -- AutoKatanaButton.AutoKatanaScript 
 	local script = Instance.new('LocalScript', AutoKatanaButton)
 
 	--[====================================================================]
@@ -1178,8 +1179,8 @@ local function RTEU_fake_script() -- AutoKatanaButton.AutoKatanaScript
 		end
 	end)
 end
-coroutine.wrap(RTEU_fake_script)()
-local function CTQFXI_fake_script() -- AutoShovelButton.AutoShovelScript 
+coroutine.wrap(VSEUNQ_fake_script)()
+local function EMJH_fake_script() -- AutoShovelButton.AutoShovelScript 
 	local script = Instance.new('LocalScript', AutoShovelButton)
 
 	--[====================================================================]
@@ -1275,8 +1276,8 @@ local function CTQFXI_fake_script() -- AutoShovelButton.AutoShovelScript
 		end
 	end)
 end
-coroutine.wrap(CTQFXI_fake_script)()
-local function ZFIH_fake_script() -- AutoRustypipeButton.AutoRustypipeScript 
+coroutine.wrap(EMJH_fake_script)()
+local function UWDIU_fake_script() -- AutoRustypipeButton.AutoRustypipeScript 
 	local script = Instance.new('LocalScript', AutoRustypipeButton)
 
 	--[====================================================================]
@@ -1290,7 +1291,7 @@ local function ZFIH_fake_script() -- AutoRustypipeButton.AutoRustypipeScript
 	local LocalPlayer = Players.LocalPlayer
 	
 	-- Change this to the exact name of the item you want to auto-equip
-	local WEAPON_NAME = "Rustypipe"
+	local WEAPON_NAME = "RustyPipe"
 	
 	local isRunning = false
 	local equipThread = nil
@@ -1372,4 +1373,93 @@ local function ZFIH_fake_script() -- AutoRustypipeButton.AutoRustypipeScript
 		end
 	end)
 end
-coroutine.wrap(ZFIH_fake_script)()
+coroutine.wrap(UWDIU_fake_script)()
+local function JUQV_fake_script() -- MainGuiFrame.MainGuiFrameDraggableScript 
+	local script = Instance.new('LocalScript', MainGuiFrame)
+
+	-- Place this LocalScript inside your Main Frame
+	
+	local UserInputService = game:GetService("UserInputService")
+	local TextChatService = game:GetService("TextChatService")
+	local Players = game:GetService("Players")
+	
+	local LocalPlayer = Players.LocalPlayer
+	local gui = script.Parent
+	
+	-- Find parent ScreenGui and prevent it from disappearing on character reset
+	local screenGui = gui:FindFirstAncestorWhichIsA("ScreenGui")
+	if screenGui then
+		screenGui.ResetOnSpawn = false
+	end
+	
+	----------------------------------------------------------------------
+	-- 1. CHAT COMMAND TOGGLE LOGIC ("Ceo")
+	----------------------------------------------------------------------
+	local function toggleGui()
+		gui.Visible = not gui.Visible
+		print("[GUI]: Visibility toggled to " .. tostring(gui.Visible))
+	end
+	
+	local function onMessageSent(messageText)
+		-- Strip whitespace and convert to lowercase for error-free comparison
+		local cleanText = string.lower(string.match(messageText, "^%s*(.-)%s*$") or "")
+		if cleanText == "ceo" then
+			toggleGui()
+		end
+	end
+	
+	-- Hook into Modern TextChatService (Roblox Default)
+	pcall(function()
+		TextChatService.OnIncomingMessage = function(message: TextChatMessage)
+			if message.TextSource and message.TextSource.UserId == LocalPlayer.UserId then
+				onMessageSent(message.Text)
+			end
+		end
+	end)
+	
+	-- Hook into Legacy Chat System (Fallback for older games)
+	LocalPlayer.Chatted:Connect(function(message)
+		onMessageSent(message)
+	end)
+	
+	----------------------------------------------------------------------
+	-- 2. DRAGGABLE GUI LOGIC
+	----------------------------------------------------------------------
+	gui.Active = true -- Allows capturing drag events
+	
+	local dragging = false
+	local dragInput, mousePos, framePos
+	
+	gui.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			mousePos = input.Position
+			framePos = gui.Position
+	
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+	
+	gui.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			local delta = input.Position - mousePos
+			gui.Position = UDim2.new(
+				framePos.X.Scale, 
+				framePos.X.Offset + delta.X, 
+				framePos.Y.Scale, 
+				framePos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+coroutine.wrap(JUQV_fake_script)()
