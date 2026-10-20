@@ -30,7 +30,7 @@ local savedHeightTracker = 2.5
 local MOVE_STEP = 0.35
 local HITBOX_SIZE = 100
 local BLOCK_ENABLED = false
-local M1_ENABLED = false
+local M2_ENABLED = true
 local PREDICT_ENABLED = false
 local PREDICT_FACTOR = 0.18
 
@@ -56,7 +56,7 @@ local targetHealthConnection = nil
 local targetAddedConnection = nil
 local isExecutingVoidCycle = false
 local isApproachingTarget = true
-local m1LoopRunning = false
+local m2LoopRunning = false
 local bKeyTriggered = false
 local attackSequenceSessionID = 0
 
@@ -111,7 +111,7 @@ local function setupRagdollReset(character)
 					myChar.Humanoid.Health = 0
 				end
 				
-				for i = 1, 5 do
+				for i = 1, 20 do
 					local respawnedChar = player.CharacterAdded:Wait()
 					respawnedChar:WaitForChild("HumanoidRootPart", 5)
 					task.wait(0.3)
@@ -261,7 +261,7 @@ runAttackSequence = function(target)
 			myChar.Humanoid.Health = 0
 		end
 
-		for i = 1, 5 do
+		for i = 1, 20 do
 			local respawnedChar = player.CharacterAdded:Wait()
 			respawnedChar:WaitForChild("HumanoidRootPart", 5)
 			if attackSequenceSessionID ~= currentSession then return end
@@ -335,7 +335,7 @@ startKillAll = function()
 					myChar.Humanoid.Health = 0
 				end
 
-				for i = 1, 5 do
+				for i = 1, 20 do
 					local respawnedChar = player.CharacterAdded:Wait()
 					respawnedChar:WaitForChild("HumanoidRootPart", 5)
 					if not killAllRunning or killAllSessionID ~= currentKillSession then break end
@@ -593,17 +593,17 @@ local function runCommand(cmd)
 		updateImmuneChecklistUI()
 	elseif cmd.type=="block" then
 		BLOCK_ENABLED = cmd.val
-	elseif cmd.type=="m1" then
+	elseif cmd.type=="m2" then
 		M1_ENABLED = cmd.val
-		if M1_ENABLED and not m1LoopRunning then
+		if M2_ENABLED and not m2LoopRunning then
 			m1LoopRunning = true
 			task.spawn(function()
 				local CombatRemote = ReplicatedStorage:WaitForChild("CombatRemote")
-				while M1_ENABLED do
-					CombatRemote:FireServer("M1")
+				while M2_ENABLED do
+					CombatRemote:FireServer("M2")
 					task.wait(0)
 				end
-				m1LoopRunning = false
+				m2LoopRunning = false
 			end)
 		end
 	elseif cmd.type=="reset" then
@@ -666,8 +666,8 @@ local function processChat(plr, msg)
 
 	if m == "k block on" then runCommand({type="block", val=true}) end
 	if m == "k block off" then runCommand({type="block", val=false}) end
-	if m == "k m1 on" then runCommand({type="m1", val=true}) end
-	if m == "k m1 off" then runCommand({type="m1", val=false}) end
+	if m == "k m2 on" then runCommand({type="m2", val=true}) end
+	if m == "k m2 off" then runCommand({type="m2", val=false}) end
 
 	if m == "k reset" then
 		resetUsed = false
