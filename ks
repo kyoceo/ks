@@ -341,7 +341,7 @@ local function executeSingleVoidDrop()
         end
     end)
 
-    task.wait(0.6)
+    task.wait(0.5)
 end
 
 local function runVoidDropSequence()
@@ -361,7 +361,7 @@ local function performRecoverySequence(onCompleteCallback)
     end
 
     player.CharacterAdded:Wait()
-    task.wait(0.7)
+    task.wait(0.5)
     runVoidDropSequence()
 
     MOVE_STEP = 1000000
