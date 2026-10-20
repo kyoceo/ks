@@ -20,8 +20,8 @@ local masterHandlers = {
 -- USER-SPECIFIC CUSTOMIZATION CONFIG
 --========================================================--
 local customConfigs = {
-    ["craken696"] = { prefix = "Craken", title = "Craken System" },
-    ["MKU48U"] = { prefix = "Konan", title = "Konan System" },
+    ["craken696"] = { prefix = "C", title = "Craken System" },
+    ["MKU48U"] = { prefix = "K", title = "Konan System" },
     ["MCT48T"] = { prefix = "Susanoo", title = "Susanoo System" },
     ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
     ["treezeekk"] = { prefix = "S", title = "S System" },
