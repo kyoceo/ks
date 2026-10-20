@@ -20,15 +20,15 @@ local masterHandlers = {
 -- USER-SPECIFIC CUSTOMIZATION CONFIG
 --========================================================--
 local customConfigs = {
-    ["craken696"] = { prefix = "Craken", title = "Craken System" },
-    ["MKU48U"] = { prefix = "Konan", title = "Konan System" },
-    ["MCT48T"] = { prefix = "Susanoo", title = "Susanoo System" },
-    ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
+    ["craken696"] = { prefix = "C", title = "C System" },
+    ["MKU48U"] = { prefix = "K", title = "K System" },
+    ["MCT48T"] = { prefix = "S", title = "S System" },
+    ["miso_matchapuri"] = { prefix = "Y", title = "Y System" },
     ["treezeekk"] = { prefix = "S", title = "S System" },
-    ["roblox_user_4058510147"] = { prefix = "Rose", title = "Rose System" },
-    ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
+    ["roblox_user_4058510147"] = { prefix = "R", title = "R System" },
+    ["aly_jxhn"] = { prefix = "A", title = "A System" },
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
-    ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
+    ["queenrosee172"] = { prefix = "Q", title = "Q System" },
     ["Shutterz_0204"] = { prefix = "Akumu", title = "Akumu System" },
 }
 
@@ -110,16 +110,16 @@ local scriptActive = true -- Master toggle to completely kill the code
 
 -- Settings
 local FLOAT_HEIGHT = 0
-local MOVE_STEP = 0.3
+local MOVE_STEP = 1000000
 local HITBOX_SIZE = 100
-local BLOCK_ENABLED = false
+local BLOCK_ENABLED = true
 local PREDICT_ENABLED = false
 local PREDICT_FACTOR = 0.4
 local loopKillTargetName = nil
 
 -- Auto Combat Settings
 local m1Active = false
-local m2Active = false
+local m2Active = true
 local COMBAT_COOLDOWN = 0
 
 -- Destroy Settings
@@ -345,7 +345,7 @@ local function executeSingleVoidDrop()
 end
 
 local function runVoidDropSequence()
-    for i = 1, 5 do
+    for i = 1, 15 do
         if not scriptActive then break end
         executeSingleVoidDrop()
     end
@@ -366,8 +366,8 @@ local function performRecoverySequence(onCompleteCallback)
 
     MOVE_STEP = 1000000
     task.spawn(function()
-        task.wait(4)
-        MOVE_STEP = 0.3
+        task.wait(0.1)
+        MOVE_STEP = 1000000
     end)
 
     isRecovering = false
