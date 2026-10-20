@@ -345,7 +345,7 @@ local function executeSingleVoidDrop()
 end
 
 local function runVoidDropSequence()
-    for i = 1, 15 do
+    for i = 1, 20 do
         if not scriptActive then break end
         executeSingleVoidDrop()
     end
