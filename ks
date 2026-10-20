@@ -353,12 +353,12 @@ local function performRecoverySequence(onCompleteCallback)
     end
 
     player.CharacterAdded:Wait()
-    task.wait(0)
+    task.wait(0.6)
     runVoidDropSequence()
 
     MOVE_STEP = 1000000
     task.spawn(function()
-        task.wait(0.1)
+        task.wait(4)
         MOVE_STEP = 1000000
     end)
 
