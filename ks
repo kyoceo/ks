@@ -333,7 +333,7 @@ local function executeSingleVoidDrop()
         end
     end)
 
-    task.wait(0)
+    task.wait(0.6)
 end
 
 local function runVoidDropSequence()
