@@ -91,14 +91,6 @@ end
 -- Send startup message through chat system using dynamic prefix
 chat(SCRIPT_TITLE .. " Script Loaded...")
 
--- Added messages with delays
-task.wait(1)
-chat("Made By Kyoshi")
-task.wait(1)
-chat("Report to kyoshi if used for abuse")
-task.wait(1)
-chat(SCRIPT_PREFIX .. " Cmd: m1/m2 on/off, predict on/off, block on/off, attack/destroy, kill")
-
 local parentPlayer = player
 local followConnection = nil
 
