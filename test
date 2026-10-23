@@ -22,19 +22,19 @@ local masterHandlers = {
 local customConfigs = {
     ["craken696"] = { prefix = "C", title = "Craken System" },
     ["MKU48U"] = { prefix = "K", title = "Konan System" },
-    ["MCT48T"] = { prefix = "Susanoo", title = "Susanoo System" },
-    ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
+    ["MCT48T"] = { prefix = "S", title = "S" },
+    ["miso_matchapuri"] = { prefix = "Y", title = "YSystem" },
     ["treezeekk"] = { prefix = "S", title = "S System" },
-    ["roblox_user_4058510147"] = { prefix = "Rose", title = "Rose System" },
+    ["roblox_user_4058510147"] = { prefix = "R", title = "R System" },
     ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
-    ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
-    ["mnmnbv555"] = { prefix = "Anan", title = "Anan System" },
-    ["Inori_luna"] = { prefix = "Luna", title = "Luna System" },
-    ["Shutterz_0204"] = { prefix = "Akumu", title = "Akumu System" },
-    ["pepetro290"] = { prefix = "HYP", title = "HYP System" },
-    ["caicedxo"] = { prefix = "Android", title = "Android System" },
-    ["jamiekilla40_alt"] = { prefix = "Jamie", title = "Jamie System" },
+    ["queenrosee172"] = { prefix = "Q", title = "Q System" },
+    ["mnmnbv555"] = { prefix = "A", title = "A System" },
+    ["Inori_luna"] = { prefix = "L", title = "L System" },
+    ["Shutterz_0204"] = { prefix = "Ak", title = "Ak System" },
+    ["pepetro290"] = { prefix = "H", title = "H System" },
+    ["caicedxo"] = { prefix = "A", title = "A System" },
+    ["jamiekilla40_alt"] = { prefix = "J", title = "J System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -124,7 +124,7 @@ local loopKillTargetName = nil
 
 -- Auto Combat Settings
 local m1Active = true
-local m2Active = false
+local m2Active = true
 local COMBAT_COOLDOWN = 0
 
 -- Destroy Settings
