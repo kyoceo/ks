@@ -22,7 +22,7 @@ local masterHandlers = {
 local customConfigs = {
     ["craken696"] = { prefix = "Android", title = "Android System" },
     ["MKU48U"] = { prefix = "Konan", title = "Konan System" },
-    ["MCT48T"] = { prefix = "Susanoo", title = "Susanoo System" },
+    ["MCT48T"] = { prefix = "S", title = "S System" },
     ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
     ["treezeekk"] = { prefix = "S", title = "S System" },
     ["roblox_user_4058510147"] = { prefix = "R", title = "R System" },
