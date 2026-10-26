@@ -31,7 +31,7 @@ local customConfigs = {
     ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
     ["fanling_1711"] = { prefix = "Fan", title = "Fan System" },
     ["bons_vx"] = { prefix = "Akira", title = "Akira System" },
-    ["Karma20376"] = { prefix = "Deku", title = "Deku System" },
+    ["karma20376"] = { prefix = "Deku", title = "Deku System" },
     ["SoCutebleh_049"] = { prefix = "Maya", title = "Maya System" },
 }
 
@@ -56,7 +56,7 @@ local allowedUsers = {
     ["thegoatdangerr"] = true,
     ["fanling_1711"] = true,
     ["bons_vx"] = true,
-    ["Karma20376"] = true,
+    ["karma20376"] = true,
     ["SoCutebleh_049"] = true,
 }
 
