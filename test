@@ -30,6 +30,7 @@ local customConfigs = {
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
     ["queenrosee172"] = { prefix = "Q", title = "Q System" },
     ["fanling_1711"] = { prefix = "f", title = "f System" },
+    ["bons_vx"] = { prefix = "f", title = "f System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -52,6 +53,7 @@ local allowedUsers = {
     ["aly_jxhn"] = true,
     ["thegoatdangerr"] = true,
     ["fanling_1711"] = true,
+    ["bons_vx"] = true,
 }
 
 if not allowedUsers[player.Name] then
