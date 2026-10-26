@@ -20,17 +20,16 @@ local masterHandlers = {
 -- USER-SPECIFIC CUSTOMIZATION CONFIG
 --========================================================--
 local customConfigs = {
-    ["craken696"] = { prefix = "Android", title = "Android System" },
-    ["MKU48U"] = { prefix = "Konan", title = "Konan System" },
+    ["craken696"] = { prefix = "A", title = "A System" },
+    ["MKU48U"] = { prefix = "K", title = "K System" },
     ["MCT48T"] = { prefix = "S", title = "S System" },
-    ["miso_matchapuri"] = { prefix = "Yokai", title = "Yokai System" },
+    ["miso_matchapuri"] = { prefix = "Y", title = "Y System" },
     ["treezeekk"] = { prefix = "S", title = "S System" },
     ["roblox_user_4058510147"] = { prefix = "R", title = "R System" },
-    ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
+    ["aly_jxhn"] = { prefix = "A", title = "A System" },
     ["thegoatdangerr"] = { prefix = "R", title = "R System" },
     ["queenrosee172"] = { prefix = "Q", title = "Q System" },
     ["fanling_1711"] = { prefix = "f", title = "f System" },
-    ["bons_vx"] = { prefix = "Akira", title = "Akira System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -53,7 +52,6 @@ local allowedUsers = {
     ["aly_jxhn"] = true,
     ["thegoatdangerr"] = true,
     ["fanling_1711"] = true,
-    ["bons_vx"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -103,7 +101,7 @@ local MOVE_STEP = 1000000
 local HITBOX_SIZE = 100
 local BLOCK_ENABLED = false
 local PREDICT_ENABLED = true
-local PREDICT_FACTOR = 0.20
+local PREDICT_FACTOR = 0.4
 local loopKillTargetName = nil
 
 -- Auto Combat Settings
@@ -141,47 +139,15 @@ local function isController(plr)
 end
 
 --========================================================--
--- PLAYER FIND (Unlimited Range / Cached Fallback)
+-- PLAYER FIND
 --========================================================--
-local cachedPlayers = {}
-
-for _, plr in ipairs(Players:GetPlayers()) do
-    cachedPlayers[plr.Name:lower()] = plr
-    if plr.DisplayName then
-        cachedPlayers[plr.DisplayName:lower()] = plr
-    end
-end
-
-Players.PlayerAdded:Connect(function(plr)
-    cachedPlayers[plr.Name:lower()] = plr
-    task.spawn(function()
-        while not plr.DisplayName do task.wait(0.1) end
-        cachedPlayers[plr.DisplayName:lower()] = plr
-    end)
-end)
-
-Players.PlayerRemoving:Connect(function(plr)
-    cachedPlayers[plr.Name:lower()] = nil
-    if plr.DisplayName then
-        cachedPlayers[plr.DisplayName:lower()] = nil
-    end
-end)
-
 local function findPlayerByFuzzy(str)
     str = str:lower()
-    
-    for key, plr in pairs(cachedPlayers) do
-        if key:find(str) then
-            return plr
-        end
-    end
-    
     for _, plr in ipairs(Players:GetPlayers()) do
-        if plr.Name:lower():find(str) or (plr.DisplayName and plr.DisplayName:lower():find(str)) then
+        if plr.DisplayName:lower():find(str) or plr.Name:lower():find(str) then
             return plr
         end
     end
-    
     return nil
 end
 
@@ -256,12 +222,6 @@ local function getTargetPosition(target)
         local hrp = target.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
             return hrp.Position
-        else
-            -- Fallback to model pivot if HRP isn't loaded yet
-            local success, pos = pcall(function()
-                return target.Character:GetPivot().Position
-            end)
-            if success then return pos end
         end
     end
     return nil
@@ -387,11 +347,9 @@ local function killScript()
 end
 
 --========================================================--
--- FOLLOW LOOP (Unlimited Range Distance Tracker)
+-- FOLLOW LOOP
 --========================================================--
 local lastTick = tick()
-local lastKnownTargetPos = nil
-
 local function startFollowing()
     if not scriptActive then return end
     if followConnection then followConnection:Disconnect() end
@@ -423,21 +381,9 @@ local function startFollowing()
         if mode == "attack" and attackTarget then
             local tChar = attackTarget.Character
             if tChar and tChar:FindFirstChild("HumanoidRootPart") then
-                local tHRP = tChar.HumanoidRootPart
-                lastKnownTargetPos = tHRP.Position
-                local predicted = getPredictedPosition(hrp, tHRP)
+                local predicted = getPredictedPosition(hrp, tChar.HumanoidRootPart)
                 local pos = predicted + Vector3.new(0, FLOAT_HEIGHT, 0)
                 smoothMove(hrp, pos)
-            elseif tChar then
-                -- Target model exists but HRP is streaming out/hidden, use model pivot
-                local success, pivotPos = pcall(function() return tChar:GetPivot().Position end)
-                if success then
-                    lastKnownTargetPos = pivotPos
-                    smoothMove(hrp, pivotPos + Vector3.new(0, FLOAT_HEIGHT, 0))
-                end
-            elseif lastKnownTargetPos then
-                -- Target is completely out of range/streamed out: move toward their last known position across the map
-                smoothMove(hrp, lastKnownTargetPos + Vector3.new(0, FLOAT_HEIGHT, 0))
             end
             return
         end
@@ -459,7 +405,6 @@ local function runCustomAttackLoop(target)
     attackLoopActive = true
     attackTarget = target
     mode = "attack"
-    lastKnownTargetPos = getTargetPosition(target)
 
     -- 1. Reset ONLY ONCE when starting the attack command
     local char = player.Character
@@ -480,7 +425,7 @@ local function runCustomAttackLoop(target)
             
             -- Wait for 3 seconds
             local elapsed = 0
-            while elapsed < 0.8 and scriptActive and attackLoopActive and attackTarget do
+            while elapsed < 0.5 and scriptActive and attackLoopActive and attackTarget do
                 task.wait(0.1)
                 elapsed = elapsed + 0.1
             end
@@ -632,7 +577,6 @@ local function onChat(plr, msg)
     if m == prefix .. " predict on" then runCommand({type = "predict", val = true}) end
     if m == prefix .. " predict off" then runCommand({type = "predict", val = false}) end
 
-    linkKillPattern = "^" .. prefix .. "%s+loopkill%s+(.+)$"
     local loopKillPattern = "^" .. prefix .. "%s+loopkill%s+(.+)$"
     local lk = m:match(loopKillPattern)
     if lk then
@@ -652,7 +596,7 @@ local function onChat(plr, msg)
         end
     end
 
-    local destroyRadiusPattern = "^"  .. prefix .. "%s+destroyradius%s+(%d+)$"
+    local destroyRadiusPattern = "^" .. prefix .. "%s+destroyradius%s+(%d+)$"
     local dr = m:match(destroyRadiusPattern)
     if dr then
         DESTROY_RADIUS = tonumber(dr)
