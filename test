@@ -20,17 +20,17 @@ local masterHandlers = {
 -- USER-SPECIFIC CUSTOMIZATION CONFIG
 --========================================================--
 local customConfigs = {
-    ["craken696"] = { prefix = "A", title = "A System" },
-    ["MKU48U"] = { prefix = "K", title = "K System" },
-    ["MCT48T"] = { prefix = "S", title = "S System" },
-    ["miso_matchapuri"] = { prefix = "Y", title = "Y System" },
-    ["treezeekk"] = { prefix = "S", title = "S System" },
-    ["roblox_user_4058510147"] = { prefix = "R", title = "R System" },
-    ["aly_jxhn"] = { prefix = "A", title = "A System" },
-    ["thegoatdangerr"] = { prefix = "R", title = "R System" },
-    ["queenrosee172"] = { prefix = "Q", title = "Q System" },
-    ["fanling_1711"] = { prefix = "f", title = "f System" },
-    ["bons_vx"] = { prefix = "f", title = "f System" },
+    ["craken696"] = { prefix = "Android", title = "Android System" },
+    ["MKU48U"] = { prefix = "Ceo", title = "Ceo System" },
+    ["MCT48T"] = { prefix = "Drake", title = "Drake System" },
+    ["miso_matchapuri"] = { prefix = "Nama", title = "Nama System" },
+    ["treezeekk"] = { prefix = "Smart", title = "Smsart System" },
+    ["roblox_user_4058510147"] = { prefix = "Rose", title = "Rose System" },
+    ["aly_jxhn"] = { prefix = "Aly", title = "Aly System" },
+    ["thegoatdangerr"] = { prefix = "Idc", title = "Idc System" },
+    ["queenrosee172"] = { prefix = "Queen", title = "Queen System" },
+    ["fanling_1711"] = { prefix = "Fan", title = "Fan System" },
+    ["bons_vx"] = { prefix = "Akira", title = "Akira System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
