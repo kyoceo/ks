@@ -33,6 +33,7 @@ local customConfigs = {
     ["bons_vx"] = { prefix = "Akira", title = "Akira System" },
     ["karma20376"] = { prefix = "Deku", title = "Deku System" },
     ["SoCutebleh_049"] = { prefix = "Maya", title = "Maya System" },
+    ["NXE_BHATI4"] = { prefix = "Bhati", title = "Bhati System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -58,6 +59,7 @@ local allowedUsers = {
     ["bons_vx"] = true,
     ["karma20376"] = true,
     ["SoCutebleh_049"] = true,
+    ["NXE_BHATI4"] = true,
 }
 
 if not allowedUsers[player.Name] then
