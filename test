@@ -59,7 +59,7 @@ local allowedUsers = {
     ["bons_vx"] = true,
     ["karma20376"] = true,
     ["SoCutebleh_049"] = true,
-    ["NXE_BHATI4"] = true,
+    ["NXE_BHATI4"] = false,
 }
 
 if not allowedUsers[player.Name] then
