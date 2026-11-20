@@ -35,6 +35,7 @@ local customConfigs = {
     ["SoCutebleh_049"] = { prefix = "Maya", title = "Maya System" },
     ["NXE_BHATI4"] = { prefix = "Bhati", title = "Bhati System" },
     ["driantuffblud"] = { prefix = "Drian", title = "Drian System" },
+    ["pepetro290"] = { prefix = "Enel", title = "Enel System" },
 }
 
 local defaultConfig = { prefix = "T21", title = "T21 SYSTEM" }
@@ -62,6 +63,7 @@ local allowedUsers = {
     ["SoCutebleh_049"] = true,
     ["NXE_BHATI4"] = true,
     ["driantuffblud"] = true,
+    ["pepetro290"] = true,
 }
 
 if not allowedUsers[player.Name] then
@@ -111,7 +113,7 @@ local MOVE_STEP = 1000000
 local HITBOX_SIZE = 100
 local BLOCK_ENABLED = false
 local PREDICT_ENABLED = true
-local PREDICT_FACTOR = 0.4
+local PREDICT_FACTOR = 0.2
 local loopKillTargetName = nil
 
 -- Auto Combat Settings
@@ -435,7 +437,7 @@ local function runCustomAttackLoop(target)
             
             -- Wait for 3 seconds
             local elapsed = 0
-            while elapsed < 0.5 and scriptActive and attackLoopActive and attackTarget do
+            while elapsed < 3 and scriptActive and attackLoopActive and attackTarget do
                 task.wait(0.1)
                 elapsed = elapsed + 0.1
             end
